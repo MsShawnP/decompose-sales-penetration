@@ -97,3 +97,48 @@ class TestHouseholds:
         assert h["household_id"].is_unique
         assert h["household_id"].iloc[0] == "HH-00001"
         assert h["household_id"].iloc[-1] == "HH-05000"
+
+
+class TestPricing:
+    _LINE_RANGES = {
+        "AS": (7.50, 11.50), "PS": (3.50, 6.50), "SC": (5.50, 9.50),
+        "DG": (4.50, 8.50), "SB": (2.75, 5.25),
+    }
+
+    def test_prices_positive_and_in_line_range(self):
+        p = hp.get_sku_prices()
+        assert len(p) == 50
+        assert set(p["product_line"]) == {"AS", "PS", "SC", "DG", "SB"}
+        assert (p["base_price"] > 0).all()
+        for _, row in p.iterrows():
+            lo, hi = self._LINE_RANGES[row["product_line"]]
+            assert lo <= row["base_price"] <= hi
+
+    def test_price_path_flat_then_2025_ramp(self):
+        path = hp.get_price_path()
+        assert len(path) == 12
+        pre_2025 = path[path["label"].str.startswith(("2023", "2024"))]
+        assert (pre_2025["price_index"] == 1.00).all()
+        y2025 = path[path["label"].str.startswith("2025")].sort_values("quarter_index")
+        assert (y2025["price_index"] > 1.00).all()
+        # strictly rising across the 2025 stretch
+        assert y2025["price_index"].is_monotonic_increasing
+        assert y2025["price_index"].iloc[-1] >= 1.14
+
+    def test_reproducible(self):
+        pd.testing.assert_frame_equal(hp.get_sku_prices(), hp.get_sku_prices())
+        pd.testing.assert_frame_equal(hp.get_price_path(), hp.get_price_path())
+
+    def test_launch_items_defined(self):
+        li = hp.get_launch_items()
+        assert len(li) == 2
+        assert set(li["sku_id"]).issubset(set(hp.ALL_SKUS))
+        assert set(li["role"]) == {"leaky", "sticky"}
+        # launch quarters fall in the analysis window
+        analysis_idx = set(hp.get_quarters().loc[hp.get_quarters()["is_analysis"], "quarter_index"])
+        assert set(li["launch_quarter_index"]).issubset(analysis_idx)
+        leaky = li[li["role"] == "leaky"].iloc[0]
+        sticky = li[li["role"] == "sticky"].iloc[0]
+        # leaky = bigger trial reach, lower repeat propensity than sticky
+        assert leaky["trial_reach"] > sticky["trial_reach"]
+        assert leaky["repeat_propensity"] < sticky["repeat_propensity"]

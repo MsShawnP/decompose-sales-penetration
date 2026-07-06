@@ -144,7 +144,7 @@ Steps:
       a test asserts the propensity distribution is right-skewed (skewness > 0 and
       variance/mean overdispersion above a floor), price_sensitivity & innovator_affinity
       ∈ [0,1], and all canonical regions present.
-- [ ] A3: Price path + price-sensitivity + launch-items model across the 12 quarters
+- [x] A3: Price path + price-sensitivity + launch-items model across the 12 quarters
     - Per-SKU base prices aligned to the canonical universe, and a per-quarter price
       path that *raises* prices over a defined stretch (the mechanism behind the
       erosion window). Also designate **two new-launch SKUs** with a launch quarter and
