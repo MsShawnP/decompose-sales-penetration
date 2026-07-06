@@ -1,0 +1,10 @@
+.git
+.env
+.pytest_cache
+__pycache__
+tests/
+screenshots/
+*.pyc
+*.parquet
+.ruff_cache
+docs/
