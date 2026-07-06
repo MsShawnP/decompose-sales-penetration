@@ -450,3 +450,115 @@ html, body {
     margin: 0;
     background-color: #f5f3ee; /* canvas */
 }
+
+/* ── Decompose shell (Slice 3) ─────────────────────────────────────── */
+
+/* As-of date + synthetic-data disclosure row */
+.as-of-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin: 4px 0 18px;
+}
+.as-of-chip {
+    font-family: var(--ll-sans);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ll-chicago-20);
+    background: var(--ll-chicago-95);
+    padding: 4px 10px;
+    border-radius: 3px;
+}
+.synthetic-note {
+    font-family: var(--ll-sans);
+    font-size: 13px;
+    color: var(--ll-reference, #666);
+}
+
+/* View heading + blurb */
+.view-heading { margin: 8px 0 20px; }
+.view-title {
+    font-family: var(--ll-serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ll-ink, #0d0d0d);
+    margin: 0 0 6px;
+}
+.view-blurb {
+    font-family: var(--ll-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ll-text, #333);
+    max-width: 60ch;
+    margin: 0;
+}
+
+/* Verdict headline (Which-Lever view — the one live output in Slice 3) */
+.verdict-headline {
+    background: #fff;
+    border: 1px solid var(--ll-separator, #e0e0e0);
+    border-top: 4px solid var(--ll-chicago-20);
+    border-radius: 4px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+}
+.verdict-figure {
+    font-family: var(--ll-serif);
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--ll-ink, #0d0d0d);
+}
+.verdict-change {
+    font-family: var(--ll-sans);
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+.verdict-change.delta-up { color: var(--ll-hk-25); }
+.verdict-change.delta-down { color: var(--ll-tokyo-40); }
+.verdict-sentence {
+    font-family: var(--ll-sans);
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ll-text, #333);
+    margin: 14px 0 0;
+    max-width: 62ch;
+}
+
+/* Slice 4 placeholders */
+.slice4-placeholder {
+    border: 1px dashed var(--ll-gridline, #d9d9d9);
+    border-radius: 4px;
+    background: var(--ll-surface, #f2f2f2);
+    padding: 28px 24px;
+    margin-bottom: 18px;
+    text-align: center;
+}
+.placeholder-label {
+    font-family: var(--ll-sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ll-text, #333);
+    margin-bottom: 6px;
+}
+.placeholder-note {
+    font-family: var(--ll-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ll-reference, #666);
+    max-width: 54ch;
+    margin: 0 auto 10px;
+}
+.placeholder-tag {
+    font-family: var(--ll-sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ll-disabled, #b3b3b3);
+    margin: 0;
+}
