@@ -1,8 +1,9 @@
 # Code conventions for `app/` (the Dash application)
 
 Applies when working in `decompose-sales-penetration/app/`. Mirror the Spin Rate
-`app/` layout: `app.py`, `layout.py`, `views/`, `calculations.py`, `charts.py`,
-`components.py`, `filters.py`, `constants.py`, `db.py`, `lailara_frame.py`.
+`app/` layout: `app.py`, `layout.py`, `views/`, `decomposition.py`, `charts.py`,
+`components.py`, `filters.py`, `constants.py`, `panel_data.py`, `lailara_frame.py`.
+(Spin Rate's `db.py` is replaced by `panel_data.py` — Decompose has no database.)
 
 ## Style
 - Match Spin Rate's code style exactly — this is a clone, not a fresh design.
@@ -14,11 +15,13 @@ Applies when working in `decompose-sales-penetration/app/`. Mirror the Spin Rate
 - Functions: verbs (`compute_penetration`, `build_waterfall`). Variables: nouns.
   Booleans: predicates (`is_authorized`, `has_lapsed`). Avoid non-standard abbrevs.
 
-## Data & DB
-- All DB access goes through `db.py` with a pooled connection. Never hard-gate the
-  Fly health check on the DB (see DECISIONS.md). Never print/commit the credential.
-- The panel comes from the `cinderhaven-household-panel` package — import it, do
-  not re-implement generation logic in `app/`.
+## Data (no DB)
+- There is no database. All data access goes through `panel_data.py`, the single
+  seam onto the in-process `cinderhaven-household-panel` package. Views/filters
+  import from `panel_data`, not from the package directly.
+- The panel comes from the package — import it, do not re-implement its generation
+  or metric logic in `app/`. `warm_cache()` builds it once at startup.
+- Health is liveness-only (no DB to gate on) — see root CLAUDE.md / DECISIONS.md.
 
 ## Charts
 - All charts go through the shared chart template (cloned from Spin Rate). The

@@ -15,7 +15,41 @@ is reversed, strike it through and add the replacement below — don't delete.
 - **Scope:** global.
 - **Do not:** rebuild UI chrome or chart config from scratch.
 
-### 2026-07-06 — Resilient health: do NOT hard-gate the Fly check on the DB
+### 2026-07-06 — Decompose uses NO database; data is the in-process panel
+- **Why:** Slices 1–2 built the household panel as a deterministic, seed-locked
+  *in-process package* (`cinderhaven-household-panel`), not `cinderhaven-db` tables.
+  The panel is deterministic, so a DB copy would only duplicate canonical data.
+- **Decision:** The app imports the package and warms it once at startup
+  (`panel_data.warm_cache()`); no psycopg2, no `DATABASE_URL`, no Postgres at
+  request time. This holds Decompose (and #4, which imports the same package)
+  entirely off the `cinderhaven-db` fragility surface: no cred sync, no 503 gate,
+  no dependence on the unrepairable pg health check.
+- **Scope:** global (data layer, deploy, health). Confirmed with Shawn.
+- **Supersedes:** the two struck decisions below (resilient-health, DATABASE_URL).
+
+### 2026-07-06 — Health is liveness-only (no readiness endpoint, no 503 gate)
+- **Why:** With no DB, there is nothing to degrade — the Spin Rate `/health` 503
+  bug is designed *out*, not worked around.
+- **Decision:** The Fly check targets a liveness endpoint that returns 200 while
+  the process is up. No DB-readiness endpoint. **Do not** add a health path that
+  can return non-200 for a data reason.
+- **Scope:** `wsgi.py`, `fly.toml`.
+
+### 2026-07-06 — Warm the panel at startup; no disk cache
+- **Why:** Panel generation is **measured ~0.6s** and `get_transactions` is already
+  `functools.lru_cache(maxsize=1)` (built once per process). With Fly
+  `min_machines_running = 1` the machine stays up, so the cost is paid once at boot.
+- **Decision:** `panel_data.warm_cache()` calls `get_transactions()` once at startup
+  so no visitor's request pays generation. **No parquet/disk cache:** it would save
+  only ~0.6s at rare process boots and could not be wired without coupling to the
+  package's internal cache (which app/CLAUDE.md forbids re-implementing). Measured,
+  not assumed. (Overrides the "cache to disk as parquet" phrasing in the Slice 3
+  ask, on the strength of the measurement — flagged to Shawn.)
+- **Scope:** `app/panel_data.py`.
+
+### ~~2026-07-06 — Resilient health: do NOT hard-gate the Fly check on the DB~~  · SUPERSEDED
+> Superseded by "Decompose uses NO database" above — there is no DB to gate on, so
+> there is no readiness endpoint at all. Original kept for the record:
 - **Why:** Spin Rate's `/health` returns 503 when the DB is down and its
   `fly.toml` check targets `/health`; a DB outage pulled both machines from the
   proxy and 503'd the whole site externally. The branded shell can serve without
@@ -25,9 +59,10 @@ is reversed, strike it through and add the replacement below — don't delete.
   readiness/observability endpoint and surfaced in-app as "data temporarily
   unavailable" over the branded shell.
 - **Scope:** `wsgi.py`, `fly.toml`.
-- **Do not:** point the Fly check at an endpoint that returns non-200 on DB down.
 
-### 2026-07-06 — DATABASE_URL into the synced credential set
+### ~~2026-07-06 — DATABASE_URL into the synced credential set~~  · SUPERSEDED
+> Superseded by "Decompose uses NO database" above — the app never sets or reads
+> `DATABASE_URL`. Original kept for the record:
 - **Why:** Stale `DATABASE_URL` secrets desynced and broke spinrate/ask-cinderhaven/
   edi-recon. Canonical credential lives in `cinderhaven-data-platform/.env`.
 - **Decision:** Wire this app's `DATABASE_URL` into the synced set; URL shape
