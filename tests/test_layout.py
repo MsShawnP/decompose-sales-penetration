@@ -6,8 +6,6 @@ view renders a unique heading, the content area pre-renders one panel per tab wi
 the right ids, and exactly the default panel is visible at load.
 """
 
-from dash import html
-
 from app.layout import TAB_IDS, TAB_LABELS, _build_content_area, _build_tabs
 from app.views import detail, penetration, which_lever
 
@@ -22,6 +20,28 @@ def _text(component) -> str:
     if children is None:
         return ""
     return _text(children)
+
+
+def _ids(component) -> set:
+    """Collect every component id present in a Dash component tree."""
+    found = set()
+
+    def walk(node):
+        if node is None or isinstance(node, str):
+            return
+        if isinstance(node, (list, tuple)):
+            for n in node:
+                walk(n)
+            return
+        cid = getattr(node, "id", None)
+        if isinstance(cid, str):
+            found.add(cid)
+        children = getattr(node, "children", None)
+        if children is not None:
+            walk(children)
+
+    walk(component)
+    return found
 
 
 class TestTabsRegression:
@@ -54,3 +74,20 @@ class TestTabsRegression:
         panels = _build_content_area().children
         displays = [p.style["display"] for p in panels]
         assert displays == ["block", "none", "none"]
+
+
+class TestChartTargets:
+    """Each view must render the output targets its callbacks write to, or the
+    figure/table callbacks would silently no-op (an invisible regression)."""
+
+    def test_which_lever_renders_verdict_and_waterfall(self):
+        ids = _ids(which_lever.layout())
+        assert {"verdict-headline", "waterfall-chart"} <= ids
+
+    def test_penetration_renders_both_charts(self):
+        ids = _ids(penetration.layout())
+        assert {"penetration-trend", "buyer-flow"} <= ids
+
+    def test_detail_renders_cards_and_table(self):
+        ids = _ids(detail.layout())
+        assert {"metric-cards", "detail-table"} <= ids

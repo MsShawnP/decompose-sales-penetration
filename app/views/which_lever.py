@@ -13,7 +13,7 @@ from dash import Input, Output, callback, dcc, html
 
 from app import panel_data
 from app.charts import CHART_CONFIG, dollar_yaxis, economist_layout
-from app.components import view_heading, why_this_matters
+from app.components import definitions_panel, view_heading, why_this_matters
 from app.constants import (
     FONT_SANS,
     FONT_SERIF,
@@ -54,6 +54,7 @@ def layout():
                 className="chart-caption",
             ),
             why_this_matters(_WHY),
+            definitions_panel(),
         ],
         className="view which-lever-view",
     )

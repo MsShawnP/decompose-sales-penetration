@@ -676,3 +676,25 @@ html, body {
     --ag-odd-row-background-color: #faf9f6;
 }
 .decompose-grid .ag-cell { white-space: nowrap; }
+
+/* Glossary (Slice 4) */
+.glossary-list { margin: 12px 0 0; }
+.glossary-row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ll-separator, #e0e0e0);
+}
+.glossary-row:last-child { border-bottom: none; }
+.glossary-term {
+    font-family: var(--ll-sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ll-ink, #0d0d0d);
+}
+.glossary-def {
+    font-family: var(--ll-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ll-text, #333);
+    margin: 2px 0 0;
+    max-width: 66ch;
+}

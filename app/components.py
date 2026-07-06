@@ -1,11 +1,28 @@
-"""Shared UI building blocks for the Decompose views.
-
-Slice 3 is the app shell: the real charts, cards, and detail table land in Slice 4.
-Until then each view renders its own distinct heading plus a labelled placeholder so
-the shell is navigable and the tabs-regression test has distinct content to assert.
-"""
+"""Shared UI building blocks for the Decompose views — headings, the 'why this
+matters' panel, and the glossary of terms."""
 
 from dash import html
+
+# The exec-facing glossary. Each entry is (term, definition); the phrasing is
+# deliberately plain so a CFO reads it without a stats background.
+GLOSSARY = [
+    ("Household penetration",
+     "The share of all panel households that bought the brand in a quarter. Meaning "
+     "#3 — the one a distribution or velocity dashboard doesn't show you."),
+    ("Buying households",
+     "How many distinct households bought at all in the period — the first lever."),
+    ("Purchase frequency",
+     "Trips per buying household in the period — how often your buyers came back."),
+    ("Spend per trip",
+     "Dollars per trip — basket size, split into units per trip × price per unit."),
+    ("New / retained / lapsed",
+     "Of this quarter's buyers, who is new vs. kept from last quarter (retained); "
+     "lapsed households bought last quarter but not this one."),
+    ("Three-lever bridge",
+     "Sales = buying households × purchase frequency × spend per trip. The waterfall "
+     "splits the change between two periods across exactly those three levers "
+     "(an exact Shapley attribution), so the pieces sum to the total change."),
+]
 
 
 def view_heading(title: str, blurb: str):
@@ -30,17 +47,22 @@ def why_this_matters(text: str):
     )
 
 
-def slice4_placeholder(label: str, note: str):
-    """A labelled placeholder standing in for a Slice 4 output.
-
-    Distinct per view (the label/note differ) so the tabs-regression test sees
-    different content in each tab panel.
-    """
-    return html.Div(
+def definitions_panel():
+    """A collapsible glossary of the terms used across the tool."""
+    items = [
+        html.Div(
+            [
+                html.Dt(term, className="glossary-term"),
+                html.Dd(definition, className="glossary-def"),
+            ],
+            className="glossary-row",
+        )
+        for term, definition in GLOSSARY
+    ]
+    return html.Details(
         [
-            html.Div(label, className="placeholder-label"),
-            html.P(note, className="placeholder-note"),
-            html.P("Built in Slice 4.", className="placeholder-tag"),
+            html.Summary("Glossary", className="why-toggle"),
+            html.Dl(items, className="glossary-list"),
         ],
-        className="slice4-placeholder",
+        className="why-details glossary-details",
     )

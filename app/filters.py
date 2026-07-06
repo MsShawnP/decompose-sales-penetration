@@ -32,7 +32,7 @@ def build_filter_bar():
         [
             html.Div(
                 [
-                    html.Label("Period A"),
+                    html.Label("Period A", title="The earlier period — the 'from' side of the comparison."),
                     dcc.Dropdown(
                         id="filter-period-a",
                         options=_quarter_options(),
@@ -46,7 +46,7 @@ def build_filter_bar():
             ),
             html.Div(
                 [
-                    html.Label("Period B"),
+                    html.Label("Period B", title="The later period — the 'to' side of the comparison."),
                     dcc.Dropdown(
                         id="filter-period-b",
                         options=_quarter_options(),
@@ -60,7 +60,10 @@ def build_filter_bar():
             ),
             html.Div(
                 [
-                    html.Label("Product line"),
+                    html.Label(
+                        "Product line",
+                        title="Narrow to one product line, or keep All lines for the whole brand.",
+                    ),
                     dcc.Dropdown(
                         id="filter-product-line",
                         options=panel_data.product_line_options(),
@@ -74,7 +77,10 @@ def build_filter_bar():
             ),
             html.Div(
                 [
-                    html.Label("Retailer"),
+                    html.Label(
+                        "Retailer",
+                        title="Narrow to one retailer, or keep All retailers for every channel.",
+                    ),
                     dcc.Dropdown(
                         id="filter-retailer",
                         options=panel_data.retailer_options(),
