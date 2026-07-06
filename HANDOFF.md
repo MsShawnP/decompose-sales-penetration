@@ -7,6 +7,30 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-06 — Slice 2 complete: decomposition math + verdict
+
+**Did:** Built `app/decomposition.py` — exact **Shapley** three-lever waterfall
+(buying households x frequency x spend-per-trip) that reconciles to ΔSales, plus a
+direction-aware "which lever" verdict with the honest-hedge threshold. Root app
+package + minimal `pyproject.toml` scaffolded (Slice 3 adds the dash/plotly/psycopg2
+stack). Also cached `get_transactions` (deterministic) — speeds metrics + app filter
+callbacks. Penetration/frequency/spend + buyer flow were already delivered in the
+panel package (A5), so Slice 2's remaining work was the waterfall + verdict.
+
+**State:** **62 tests green** (49 panel + 13 decomposition). Reconciliation proven on
+2000 random triples + real pairs. Real erosion pair 2024-Q4→2025-Q4: sales +$1,954
+"driven mainly by higher spend per trip" while buying households −$2,459 and
+frequency −$3,597 — the growth-is-actually-erosion punchline, computed honestly.
+
+**Next:** Slice 3 — clone the Spin Rate app shell (Dash/Plotly, `lailara_frame`,
+`lailara-palette`, assets, shared chart template with the #5 chart rules), resilient
+`/health` (liveness endpoint for the Fly check + separate DB readiness), branded
+loader, `DATABASE_URL` into the synced cred set. This is the visual + DB + deploy
+phase — expand root `pyproject.toml` to the full stack here. Deploy (Slice 5) needs
+Shawn's explicit go-ahead.
+
+---
+
 ## 2026-07-06 — Slice 1 complete: household-panel generator built
 
 **Did:** Built `cinderhaven-household-panel` end-to-end (A1–B), committing each
