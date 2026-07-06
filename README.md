@@ -38,9 +38,11 @@ actually erosion."
 ## Stack
 
 - Python 3.11
-- Dash 3.x + Plotly 6.0 (dash-ag-grid for tables, clientside JS callbacks)
-- pandas 2.x, numpy, psycopg2
-- Postgres (Cinderhaven SSOT, `cinderhaven-db`)
+- Dash 4.x + Plotly 6.x (dash-ag-grid for tables, clientside JS callbacks)
+- pandas 2.x, numpy, pyarrow
+- **No database.** Data is the in-process, seed-locked `cinderhaven-household-panel`
+  package — generated once at startup, cached, and reused. This keeps Decompose off
+  the `cinderhaven-db` fragility surface; health is liveness-only.
 - Gunicorn + Docker + Fly.io (`iad`)
 
 ## Data contract
@@ -53,9 +55,11 @@ versioned at generation time and do not alter any existing canonical figure.
 ## Run
 
 ```
-# Local: native PG16 on port 5433, or proxy cinderhaven-db on 127.0.0.1:15432
+# No database or credentials required — the panel is generated in-process.
 pip install -e .
 python wsgi.py   # serves on http://127.0.0.1:8050
+
+pytest            # app suite (charts, views, tabs regression, data seam)
 ```
 
 ---
