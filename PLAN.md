@@ -60,12 +60,12 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - [x] Write full spec (docs/SPEC.md) + carry brief/brainstorm into docs/
 
 ### Slice 1 — Shared household panel package
-- [ ] Scaffold `packages/cinderhaven-household-panel` (src layout, pyproject, locked SEED)
-- [ ] Generate ~5,000 households with right-skewed (negative-binomial-ish) purchase frequency
-- [ ] Timeline: 4 burn-in quarters + 8 analysis quarters, aligned to canonical universe (50 SKUs / 5 lines / 6 retailers)
-- [ ] Seed the "growth that's actually erosion" story (sales up on price, penetration down)
-- [ ] Lock + version the panel; canonical/reproducibility unit tests (mirror store-universe test_canonical.py)
-- [ ] Panel-realism checks (skew, frequency distribution) as tests
+- [x] Scaffold `packages/cinderhaven-household-panel` (src layout, pyproject, locked SEED)
+- [x] Generate ~5,000 households with right-skewed (negative-binomial-ish) purchase frequency
+- [x] Timeline: 4 burn-in quarters + 8 analysis quarters, aligned to canonical universe (50 SKUs / 5 lines / 6 retailers)
+- [x] Seed the "growth that's actually erosion" story (sales up on price, penetration down)
+- [x] Lock + version the panel; canonical/reproducibility unit tests (mirror store-universe test_canonical.py)
+- [x] Panel-realism checks (skew, frequency distribution) as tests
 
 ### Slice 2 — Decomposition math
 - [ ] Household penetration %, purchase frequency, spend per trip (units/trip × price/unit)
@@ -104,7 +104,7 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 ## Definition of done for this arc
 
 - [ ] Waterfall reconciliation unit test passes exactly.
-- [ ] Panel package is versioned, seed-locked, reproducible, and importable by #4.
+- [x] Panel package is versioned, seed-locked, reproducible, and importable by #4.
 - [ ] App deployed, resilient `/health` (DB outage → branded shell, not 503).
 - [ ] Every chart individually inspected; tabs regression test green.
 - [ ] Compound review complete, findings resolved, tests green.
@@ -185,7 +185,7 @@ Steps:
       larger trial reach. Tune A2/A3/A4 params until they emerge — never hardcode.
     - Depends on: A5
     - Done when: tests assert (a) and (b) using only computed metrics.
-- [ ] B (integration): public API, version lock, full canonical suite, ready for reuse
+- [x] B (integration): public API, version lock, full canonical suite, ready for reuse
     - Finalize the public API (`SEED`, `PANEL_VERSION`, constants, `LAUNCH_ITEMS`,
       `get_households`, `get_transactions`, `get_period_metrics`, `get_buyer_flow`,
       and a launch-metadata accessor #4 needs), set `PANEL_VERSION`, update the

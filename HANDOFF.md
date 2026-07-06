@@ -7,6 +7,31 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-06 — Slice 1 complete: household-panel generator built
+
+**Did:** Built `cinderhaven-household-panel` end-to-end (A1–B), committing each
+sub-task: locked constants + 12-quarter calendar (A1); household dimension with
+gamma propensity + price-sensitivity + innovator-affinity (A2); per-SKU prices +
+2025 price-up path + two launch items (A3); vectorized NB transaction generator with
+launch trial/repeat + retailer dimension (A4); period-metrics + buyer-flow accessors
+(A5); seeded-story gates (A6); integration/version/README (B).
+
+**State:** **49 tests green.** Panel is deterministic (`SEED=42`), versioned
+(v0.1.0), reproducible, importable by #4. Emergent + verified: quarterly erosion
+(2024→2025 YoY sales up ~+4%, mean penetration −1.5pp; flat 2023→2024 does not
+erode), realism (trips/hh var/mean≈15, skew≈2.3), launch repeat leaky ~14% /
+sticky ~52%. New scope folded in per Shawn: #4's two launch stories baked into the
+shared panel (burn-in launch, 2023-Q2); retailer dimension added for the app slice.
+
+**Decisions this session:** penetration erosion is a *quarterly* phenomenon (annual
+reach saturates) → compare quarters YoY; launches sit in burn-in for #4 runway.
+
+**Next:** Slice 2 — decomposition math: three-lever waterfall (Shapley, reconciles
+exactly to ΔSales) + "which lever" verdict with the honest-hedge threshold, built on
+`get_period_metrics` / `get_buyer_flow`. Then Slice 3 (clone Spin Rate app shell).
+
+---
+
 ## 2026-07-06 — Project initialized + fully spec'd
 
 **Started from:** New project. Brief + brainstorm attached (now in
