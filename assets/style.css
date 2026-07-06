@@ -597,3 +597,82 @@ html, body {
     max-width: 64ch;
     margin: 10px 0 0;
 }
+
+/* ── Detail view: metric cards + grid (Slice 4) ────────────────────── */
+.metric-cards-caption {
+    font-family: var(--ll-sans);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ll-reference, #666);
+    margin-bottom: 10px;
+}
+.metric-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+}
+.metric-card {
+    background: #fff;
+    border: 1px solid var(--ll-separator, #e0e0e0);
+    border-top: 3px solid var(--ll-chicago-20);
+    border-radius: 4px;
+    padding: 16px 18px;
+}
+.metric-card-label {
+    font-family: var(--ll-sans);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ll-text-sec, #595959);
+    margin-bottom: 8px;
+}
+.metric-card-value {
+    font-family: var(--ll-serif);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--ll-ink, #0d0d0d);
+}
+.metric-card-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+.metric-card-prev {
+    font-family: var(--ll-sans);
+    font-size: 13px;
+    color: var(--ll-reference, #666);
+}
+.metric-card-delta {
+    font-family: var(--ll-sans);
+    font-size: 14px;
+    font-weight: 700;
+}
+.metric-card-delta.delta-up { color: var(--ll-hk-25); }
+.metric-card-delta.delta-down { color: var(--ll-tokyo-40); }
+
+.detail-subhead {
+    font-family: var(--ll-serif);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ll-ink, #0d0d0d);
+    margin: 26px 0 12px;
+}
+
+.decompose-grid.ag-theme-alpine {
+    --ag-font-size: 12px;
+    --ag-grid-size: 4px;
+    --ag-cell-horizontal-padding: 10px;
+    --ag-row-height: 32px;
+    --ag-header-height: 36px;
+    --ag-font-family: var(--ll-sans);
+    --ag-header-background-color: var(--ll-chicago-95);
+    --ag-odd-row-background-color: #faf9f6;
+}
+.decompose-grid .ag-cell { white-space: nowrap; }
