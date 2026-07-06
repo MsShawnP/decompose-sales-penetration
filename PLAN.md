@@ -124,7 +124,7 @@ sensitive households buying less/lapsing), then the penetration decline is
 *computed* from the resulting transactions — never asserted at generation.
 
 Steps:
-- [ ] A1: Package scaffold + locked constants + quarter calendar
+- [x] A1: Package scaffold + locked constants + quarter calendar
     - Build `packages/cinderhaven-household-panel` (src layout, pyproject mirroring
       cinderhaven-store-universe). Define `SEED`, `N_HOUSEHOLDS=5000`,
       `BURN_IN_QUARTERS=4`, `ANALYSIS_QUARTERS=8`, and a 12-quarter calendar
