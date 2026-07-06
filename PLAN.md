@@ -74,11 +74,12 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - [x] New / retained / lapsed buyer decomposition  (in panel A5)
 - [x] Plain-language "which lever" verdict generator
 
-### Slice 3 — App shell (clone Spin Rate)
+### Slice 3 — App shell (clone Spin Rate; in-process, no DB)
 - [ ] Clone app/ structure, lailara_frame, assets, lailara-palette
-- [ ] Resilient health: Fly check on a liveness endpoint (200 while up); separate DB-readiness endpoint; branded "data temporarily unavailable" state
-- [ ] Wire DATABASE_URL into the synced cred set
+- [ ] `panel_data.py`: import `cinderhaven_household_panel`, generate once, cache to disk (parquet/pickle), serve metrics/flow/decomposition per filter combo — no psycopg2, no DATABASE_URL
+- [ ] Liveness-only health: Fly check on a liveness endpoint (200 while up). No DB-readiness endpoint, no 503 gate (nothing to degrade)
 - [ ] Branded pre-hydration loading state (no blank white first paint)
+- [ ] Full stack in root pyproject.toml (dash, plotly, dash-ag-grid, gunicorn, python-dotenv, lailara-palette); Dockerfile + fly.toml (no DATABASE_URL secret)
 
 ### Slice 4 — Outputs (each reviewed in-slice)
 - [ ] Three-lever waterfall chart (shared chart template; inspect for clipped labels / dup ticks / legend overlap)
@@ -105,7 +106,7 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 
 - [x] Waterfall reconciliation unit test passes exactly.
 - [x] Panel package is versioned, seed-locked, reproducible, and importable by #4.
-- [ ] App deployed, resilient `/health` (DB outage → branded shell, not 503).
+- [ ] App deployed; liveness-only `/health` (200 while process up; no DB, no 503 gate).
 - [ ] Every chart individually inspected; tabs regression test green.
 - [ ] Compound review complete, findings resolved, tests green.
 - [ ] Blog post draft + Work-page card delivered.

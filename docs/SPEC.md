@@ -98,7 +98,12 @@ the full contract. Summary:
 - **Seeded story:** a window where **sales grow on price while household
   penetration declines** ("growth that's actually erosion"), unit-tested to exist.
 - Deterministic + reproducible (`assert_frame_equal` across generations).
-- Loaded into `cinderhaven-db` as **new** tables (does not touch canonical raw).
+- **In-process, not in the DB.** The app imports the package and generates/caches
+  the panel at startup (disk cache; never regenerated per request). Because the
+  panel is deterministic and seed-locked, persisting it to `cinderhaven-db` would
+  only create a second copy of canonical data — so we don't. This deliberately
+  keeps Decompose (and #4) off the `cinderhaven-db` fragility surface (cred sync,
+  503 gate, pg health check). No Postgres at request time.
 
 ## 5. Outputs (Slice 4)
 
@@ -117,15 +122,17 @@ clipped labels, duplicate/misrounded currency ticks, and legend overlap.
 ## 6. App architecture (Slice 3 — clone Spin Rate)
 
 - `wsgi.py` entry; `app/` package (`app.py`, `layout.py`, `views/`,
-  `calculations.py`, `charts.py`, `components.py`, `filters.py`, `constants.py`,
-  `db.py`, `lailara_frame.py`); `assets/`; `packages/`.
-- **Resilient health (do not clone Spin Rate's bug):** Fly check targets a
-  **liveness** endpoint (200 while process up). A **separate** readiness endpoint
-  reports DB status; on DB outage the app serves the branded shell + "data
-  temporarily unavailable," never a proxy-killing 503.
+  `decomposition.py`, `charts.py`, `components.py`, `filters.py`, `constants.py`,
+  `panel_data.py`, `lailara_frame.py`); `assets/`; `packages/`.
+- Data layer is `panel_data.py`, **not** `db.py`: it imports
+  `cinderhaven_household_panel`, generates the panel once, caches it to disk, and
+  serves period metrics / buyer flow / decomposition for each filter combination.
+  No psycopg2, no `DATABASE_URL`.
+- **Health = liveness only.** The Fly check targets a liveness endpoint that
+  returns 200 while the process is up. There is no DB to degrade, so there is no
+  readiness endpoint and no 503-on-DB gate — the Spin Rate bug is designed out
+  rather than worked around.
 - Branded pre-hydration loading state (no blank white first paint on a cold link).
-- `DATABASE_URL` wired into the synced cred set; canonical credential from
-  `cinderhaven-data-platform/.env`, never printed/committed.
 
 ## 7. UX / exec-facing content
 

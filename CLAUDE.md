@@ -31,7 +31,11 @@ history runway.
 
 - Primary language: Python 3.11
 - App: Dash 3.x + Plotly 6.0 (mirror the Spin Rate stack, do not reinvent)
-- Data: pandas 2.x, numpy, psycopg2 → Cinderhaven SSOT Postgres (`cinderhaven-db`)
+- Data: pandas 2.x, numpy. **In-process only** — the app imports the seed-locked
+  `cinderhaven-household-panel` package, generates the panel once, and caches it to
+  disk. **No psycopg2, no Postgres, no `DATABASE_URL` at request time.** (The panel
+  is deterministic; a DB copy would just duplicate canonical data. This keeps
+  Decompose off the `cinderhaven-db` fragility surface — see Database section below.)
 - UI: dash-ag-grid for tables, clientside JS callbacks
 - Deploy: Gunicorn + Docker + Fly.io (shared-cpu-1x, `iad`)
 - Entry point: `wsgi.py`
@@ -55,37 +59,32 @@ Decompose.
 
 ## Hard rules — carried from #1/#2/#5, do not relearn
 
-### Database / infrastructure
+### Data / infrastructure
 
-- **Do NOT hard-gate the Fly health check on the DB.** Spin Rate's `/health`
-  returns 503 when the DB is down and its `fly.toml` check targets `/health`,
-  which pulls both machines from the proxy → external 503. **Decompose must not
-  clone this.** The Fly check targets a **liveness** endpoint that returns 200
-  while the process is up; DB status lives on a **separate** readiness/observ-
-  ability endpoint and is surfaced in-app as "data temporarily unavailable" over
-  the branded shell. See DECISIONS.md.
-- **Canonical DB credential** lives in `cinderhaven-data-platform/.env`
-  (`OPERATOR_PASSWORD` == `POSTGRES_PASSWORD`, gitignored). Never print/commit
-  the value — reference it by variable name. `DATABASE_URL` shape:
-  `postgres://postgres:<OPERATOR_PASSWORD>@cinderhaven-db.flycast:5432/<db>?sslmode=disable`.
-  Wire `DATABASE_URL` into the synced cred set so this app never repeats the
-  desync that broke spinrate/ask-cinderhaven/edi-recon.
-- **Do NOT touch `cinderhaven-db` internals** (secrets, roles, restarts). Its
-  internal `pg` health check is proven-unrepairable-in-place across 3 sessions
-  and is cosmetic — it does not affect the app-facing `postgres` role or the
-  downstream apps. Any work on it needs a separate, explicit go-ahead.
-- New panel tables live in the **same `cinderhaven-db` SSOT** as new tables — do
-  not touch the canonical `cinderhaven` raw schema or doormath's locked figures.
+- **Decompose does not use a database.** Its data is the in-process, seed-locked
+  `cinderhaven-household-panel` package (see Stack above). This is deliberate: it
+  keeps Decompose (and #4) entirely off the `cinderhaven-db` fragility surface —
+  no cred sync, no 503 health gate, no dependence on the unrepairable pg health
+  check. The Spin Rate DB-resilience hazards below are therefore designed *out*,
+  not worked around.
+- **Health = liveness only.** The Fly check targets a liveness endpoint that
+  returns 200 while the process is up. There is no DB to degrade, so there is no
+  readiness endpoint and no 503-on-DB gate. (Spin Rate's bug: its `/health`
+  returned 503 when the DB was down and `fly.toml` checked `/health`, pulling both
+  machines from the proxy → external 503. Nothing here can reproduce that.)
+- **Do NOT touch `cinderhaven-db` internals** (secrets, roles, restarts). Decompose
+  has no reason to connect to it at all. Any work on it needs a separate, explicit
+  go-ahead.
+- Do not touch the canonical `cinderhaven` raw schema or doormath's locked figures.
 
 ### Local dev (this machine)
 
-- Docker Desktop is broken here (stale-socket crash loop). Use native **PG16 at
-  `C:\Users\mssha\tools\pg16`, port 5433** for local.
-- Port 5432 is squatted by a local Postgres. Proxy to prod on a dedicated port
-  (e.g. `fly proxy 15432:5432 -a cinderhaven-db`) and connect via `127.0.0.1`
-  explicitly — never `localhost` (`::1` resolution trap).
-- After creating the git repo set repo-local
-  `git config credential.helper '!gh auth git-credential'` so `git push` auths.
+- No database to run locally — the panel is generated in-process. Run the app with
+  `python wsgi.py` (or gunicorn); first boot generates + caches the panel to disk.
+- Docker Desktop is broken here (stale-socket crash loop) — build/deploy via Fly's
+  remote builder, not local Docker.
+- Repo-local `git config credential.helper '!gh auth git-credential'` so `git push`
+  auths (already set for this repo).
 
 ### Design / charts — identical to Spin Rate by construction
 
