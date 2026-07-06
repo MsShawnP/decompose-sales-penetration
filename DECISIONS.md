@@ -104,6 +104,18 @@ is reversed, strike it through and add the replacement below — don't delete.
 - **Scope:** `packages/cinderhaven-household-panel` (A3/A4/A6). **Do not:** hardcode
   the repeat rates or expose a launch story #4 can't recompute from transactions.
 
+### 2026-07-06 — Penetration erosion is a QUARTERLY phenomenon; compare quarter-over-quarter
+- **Finding (from A4 measurement):** household penetration erosion shows at the
+  quarterly grain (2024-Q4 pen 44.1% + sales $46.6k → 2025-Q4 pen 43.0% + sales
+  $52.3k). At the ANNUAL grain, reach saturates (~72% of households buy at least once
+  a year regardless of price), so annual buyers barely move and the erosion hides.
+- **Decision:** Decompose's period-over-period comparison operates at the quarter
+  grain; the default erosion showcase is year-over-year same quarter (2025-Q4 vs
+  2024-Q4), which also sidesteps the unmodeled-seasonality issue. This is honest and
+  reinforces the thesis — annual penetration hides what quarterly reveals ("the metric
+  your dashboard isn't showing you").
+- **Do not:** frame the erosion as an annual-penetration decline — it isn't one.
+
 ### 2026-07-06 — New panel tables live in the same cinderhaven-db SSOT as new tables
 - **Why:** Keep one source of truth; #4 reads the same tables.
 - **Do not:** touch the canonical `cinderhaven` raw schema or `cinderhaven-db`

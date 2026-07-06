@@ -5,8 +5,14 @@ Slice 1 sub-task; this file currently covers A1 (constants + calendar).
 """
 
 import pandas as pd
+import pytest
 
 import cinderhaven_household_panel as hp
+
+
+@pytest.fixture(scope="module")
+def tx():
+    return hp.get_transactions()
 
 
 class TestConstants:
@@ -134,11 +140,56 @@ class TestPricing:
         assert len(li) == 2
         assert set(li["sku_id"]).issubset(set(hp.ALL_SKUS))
         assert set(li["role"]) == {"leaky", "sticky"}
-        # launch quarters fall in the analysis window
-        analysis_idx = set(hp.get_quarters().loc[hp.get_quarters()["is_analysis"], "quarter_index"])
-        assert set(li["launch_quarter_index"]).issubset(analysis_idx)
         leaky = li[li["role"] == "leaky"].iloc[0]
         sticky = li[li["role"] == "sticky"].iloc[0]
         # leaky = bigger trial reach, lower repeat propensity than sticky
         assert leaky["trial_reach"] > sticky["trial_reach"]
         assert leaky["repeat_propensity"] < sticky["repeat_propensity"]
+        # launch sits in burn-in so trial + repeat runway precede the analysis window
+        assert (li["launch_quarter_index"] < hp.BURN_IN_QUARTERS).all()
+
+
+class TestTransactions:
+    def test_schema_and_nonempty(self, tx):
+        assert len(tx) > 0
+        assert list(tx.columns) == [
+            "household_id", "quarter_index", "quarter_label", "date",
+            "sku_id", "product_line", "units", "unit_price", "spend",
+        ]
+
+    def test_reproducible(self):
+        pd.testing.assert_frame_equal(hp.get_transactions(), hp.get_transactions())
+
+    def test_spend_and_units_positive(self, tx):
+        assert (tx["spend"] > 0).all()
+        assert (tx["units"] >= 1).all()
+        # spend is units * unit_price to the cent
+        assert (tx["spend"] == (tx["units"] * tx["unit_price"]).round(2)).all()
+
+    def test_only_canonical_skus(self, tx):
+        assert set(tx["sku_id"]).issubset(set(hp.ALL_SKUS))
+
+    def test_dates_inside_their_quarter(self, tx):
+        q = hp.get_quarters().set_index("quarter_index")[["start_date", "end_date"]]
+        merged = tx.join(q, on="quarter_index")
+        assert (merged["date"] >= merged["start_date"]).all()
+        assert (merged["date"] <= merged["end_date"]).all()
+
+    def test_frequency_right_skewed_and_overdispersed(self, tx):
+        # trips per household across ALL households (incl. never-buyers) — the
+        # negative-binomial signature of real panel data.
+        tph = tx.groupby("household_id").size().reindex(
+            hp.get_households()["household_id"], fill_value=0
+        )
+        assert tph.var() / tph.mean() > 3.0, "trip counts not overdispersed enough"
+        m, sd = tph.mean(), tph.std()
+        skew = (((tph - m) / sd) ** 3).mean()
+        assert skew > 1.0, f"trip-count skew {skew:.2f} not right-skewed enough"
+
+    def test_launch_items_zero_before_launch_nonzero_after(self, tx):
+        for sku, cfg in hp.LAUNCH_ITEMS.items():
+            lq = cfg["launch_quarter_index"]
+            rows = tx[tx["sku_id"] == sku]
+            assert (rows["quarter_index"] >= lq).all(), f"{sku} sold before launch"
+            assert (rows["quarter_index"] == lq).any(), f"{sku} has no trial-quarter sales"
+            assert (rows["quarter_index"] > lq).any(), f"{sku} has no post-launch sales"

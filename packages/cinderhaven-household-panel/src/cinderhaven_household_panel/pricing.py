@@ -24,11 +24,13 @@ assert set(_LINE_PRICE_RANGE) == set(PRODUCT_LINES), "price ranges must cover al
 # Price-response strength. In A4 a household's effective trip rate scales by
 # price_index ** (-PRICE_ELASTICITY * household price_sensitivity): higher prices +
 # higher sensitivity → fewer trips, so price-sensitive households lapse as prices rise.
-PRICE_ELASTICITY = 1.6
+# Tuned (A6) so the price lift outweighs the volume loss — sales rise while
+# penetration quietly declines, rather than volume collapsing and sales falling.
+PRICE_ELASTICITY = 1.2
 
 # 2025 price-up stretch (multiplicative brand price index). Flat through 2023-2024;
 # this is the mechanism behind the "growth that's actually erosion" window.
-_PRICE_RAMP_2025 = {1: 1.06, 2: 1.09, 3: 1.12, 4: 1.15}
+_PRICE_RAMP_2025 = {1: 1.08, 2: 1.12, 3: 1.16, 4: 1.20}
 
 
 def _line_of(sku: str) -> str:
@@ -73,16 +75,19 @@ def get_price_path() -> pd.DataFrame:
 # repeat propensity (targets ~15% repeat); the sticky item with modest trial and high
 # repeat propensity (targets 45%+). The realized rates emerge in A4 and are verified
 # against bands in A6 — they are not asserted here.
+# Both launch in burn-in (2023-Q2) so the trial spike + repeat runway sit BEFORE the
+# 2024-2025 analysis window — this is the runway the brief wants for #4, and it keeps
+# the launch spike from distorting Decompose's period-over-period penetration.
 LAUNCH_ITEMS = {
     "CHP-SB-010": {  # Snack Bites — impulse, high trial / low repeat
         "role": "leaky",
-        "launch_quarter_index": 4,  # 2024-Q1, first analysis quarter
+        "launch_quarter_index": 1,  # 2023-Q2 (burn-in)
         "trial_reach": 0.25,        # big trial spike
         "repeat_propensity": 0.15,  # low stickiness
     },
     "CHP-PS-010": {  # Pantry Staple — repurchased, modest trial / high repeat
         "role": "sticky",
-        "launch_quarter_index": 4,  # 2024-Q1
+        "launch_quarter_index": 1,  # 2023-Q2 (burn-in)
         "trial_reach": 0.09,        # modest trial
         "repeat_propensity": 0.52,  # high stickiness
     },

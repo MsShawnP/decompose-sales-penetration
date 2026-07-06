@@ -155,7 +155,7 @@ Steps:
     - Done when: all prices positive; price index rises across the intended quarters and
       is flat elsewhere; 50 SKUs / 5 lines present; `LAUNCH_ITEMS` defines 2 SKUs with a
       launch quarter inside the analysis window; deterministic across two calls.
-- [ ] A4: Transaction generator (the panel, incl. trial/repeat for launch items)
+- [x] A4: Transaction generator (the panel, incl. trial/repeat for launch items)
     - `get_transactions()` → household × date × item × units × spend. Per household
       per quarter, draw trips via Poisson–gamma (NB) from A2 propensity, modulated by
       the A3 price effect on price-sensitive households; each trip emits item lines
