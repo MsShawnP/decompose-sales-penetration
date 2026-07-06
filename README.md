@@ -1,6 +1,6 @@
 # Decompose
 
-**Live:** https://decompose.lailarallc.com <!-- deployed to Fly (decompose-sales-penetration.fly.dev); custom-domain DNS pending -->
+**Live:** https://decompose.lailarallc.com
 
 Sales went up. That tells you nothing about *why*. Decompose splits a brand's
 period-over-period sales change into the only three things that can move it —

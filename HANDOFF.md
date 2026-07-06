@@ -9,18 +9,17 @@ things that didn't work, see FAILURES.md.
 
 ## 2026-07-06 — Slice 5: reviewed, fixed, DEPLOYED (custom-domain DNS pending)
 
-**Deployed.** Live at **https://decompose-sales-penetration.fly.dev** (2 machines,
-iad, health checks passing). `/health` → `200 {"status":"ok"}`; production
-`_dash-layout` contains all chart targets + as-of note + synthetic disclosure — the
-panel generates in-container and the app is fully wired.
+**Deployed and LIVE at https://decompose.lailarallc.com** (HTTPS, cert Issued) — also
+`decompose-sales-penetration.fly.dev` (2 machines, iad, health passing). `/health` →
+`200 {"status":"ok"}`; production `_dash-layout` has all chart targets + as-of note +
+synthetic disclosure — panel generates in-container, app fully wired.
 
-**⚠ One manual step left (Shawn — no registrar access from here):** point
-`decompose.lailarallc.com` DNS at Fly, then it goes live on the branded domain. Cert
-already created (`fly certs add`), currently "Not verified" pending DNS. Records:
-- `A    decompose → 66.241.125.108`
-- `AAAA decompose → 2a09:8280:1::140:558f:0`
-  (or a `CNAME decompose → decompose-sales-penetration.fly.dev`). Then
-  `fly certs check decompose.lailarallc.com`.
+**Custom domain done via Cloudflare API.** The Lailara DNS-edit token was located and
+stored at `~/.config/lailara/cloudflare-dns-token` (outside all repos; see the
+`cloudflare-dns-token` memory — the wrangler OAuth is `zone:read` only and can't edit
+DNS). Created DNS-only CNAMEs matching doormath's pattern:
+`decompose → zkpr0nm.decompose-sales-penetration.fly.dev` + the `_acme-challenge`
+CNAME. Token value is NOT in any repo (verified).
 
 **5A — multi-agent code review (5 personas):** correctness, Python, maintainability,
 testing, project-standards. Drove all real findings to resolution:
