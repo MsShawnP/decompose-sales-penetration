@@ -34,6 +34,38 @@ is reversed, strike it through and add the replacement below — don't delete.
   `postgres://postgres:<OPERATOR_PASSWORD>@cinderhaven-db.flycast:5432/<db>?sslmode=disable`.
 - **Scope:** deploy/secrets. **Do not:** commit or print the credential value.
 
+## Product & Scope (from /clarify, 2026-07-06)
+
+### 2026-07-06 — Narrative is computed from the SSOT, never scripted
+- **Why:** Shawn: "the data in the SSOT tells the truth; the narrative tells the
+  truth based on the data." Overriding the brief's "seed the punchline" phrasing:
+  we do NOT force data to fit a predetermined story.
+- **Decision:** The "which lever" verdict and all narrative are a truthful function
+  of the actual panel data for the selected period/filter. The generator is tuned
+  with realistic parameters so a genuine erosion window exists to be *found* — the
+  tool derives the finding; it never hardcodes it. Change the selection → the
+  verdict changes.
+- **Scope:** global. **Do not:** hardcode a conclusion or stage data to a claim.
+
+### 2026-07-06 — Public portfolio demo on Cinderhaven only; no upload, no login
+- **Why:** Intended audience is CEO/CFO; it's a portfolio piece open to all from
+  lailarallc.com. It showcases the *method*, not a bring-your-own-data tool.
+- **Decision:** No user data upload, no auth. Synthetic-data disclosure stays on
+  the page. **Do not:** add a "try your own data" path.
+
+### 2026-07-06 — Interactive-but-guided; slice by period / product line / retailer
+- **Decision:** Opens on an exec default (whole brand, latest A-vs-B). Light,
+  labeled controls: Period A vs Period B, product line, retailer — all recompute
+  from the SSOT. Channel is NOT a top-level control (keeps it clean for a CEO).
+- **Why:** A CEO/CFO won't drive an analyst cockpit, but interactivity lets a
+  skeptic re-slice and watch the verdict change (serves the truth principle).
+
+### 2026-07-06 — Honest-hedge verdict when no lever dominates
+- **Decision:** When no single lever exceeds a defined share-of-move threshold, the
+  verdict reports "mixed / X and Y together" instead of naming a marginal winner.
+- **Why:** On a public piece aimed at CEOs, overstating a near-tie undercuts
+  credibility. Threshold value TBD in Slice 2; log it when set.
+
 ## Data & Schema
 
 ### 2026-07-06 — Panel ships as a standalone versioned package with burn-in

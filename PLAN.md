@@ -6,6 +6,30 @@ The current arc of work. For session-by-session state, see HANDOFF.md.
 
 ---
 
+## Goal — clarified 2026-07-06 (via /clarify)
+
+A **public, interactive-but-guided portfolio demo** that decomposes Cinderhaven's
+period-over-period sales change into three levers — buying households (household
+penetration) × frequency × spend per trip — with new/retained/lapsed buyer flow,
+and tells a CEO/CFO in plain language which lever moved, **all derived honestly
+from the SSOT**.
+
+Clarified scope refinements (these shape every slice below):
+- **Audience/hosting:** CEO/CFO; public on lailarallc.com. Showcases the *method*
+  on Cinderhaven synthetic data — **no upload, no login**; synthetic-data
+  disclosure on the page.
+- **Interactive-but-guided:** opens on an exec default (whole brand, latest A-vs-B);
+  user slices by **Period A/B, product line, retailer** (channel NOT a top control);
+  penetration/waterfall/flow/verdict all recompute from the SSOT.
+- **Truth principle:** the verdict is always *computed* from the data, never
+  scripted. The generator is tuned with realistic parameters so a genuine erosion
+  window (price up, penetration down) *exists to be found* — the tool derives it,
+  doesn't assert it.
+- **Honest-hedge verdict:** when no lever exceeds a set share-of-move threshold,
+  the verdict says "mixed / X and Y together" rather than forcing one winner.
+
+---
+
 ## Goal
 
 Ship Decompose to `decompose.lailarallc.com`: a household-penetration
