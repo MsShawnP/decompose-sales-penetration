@@ -91,6 +91,19 @@ is reversed, strike it through and add the replacement below — don't delete.
 - **Scope:** global. **Do not:** change doormath's or the series' locked figures
   without the change protocol + impact check + Shawn's approval.
 
+### 2026-07-06 — Bake #4 Leaky Bucket's two launch stories into the shared panel now
+- **Decision:** The panel designates **two new-launch SKUs** so tool #4 is pure
+  reuse and never forces a panel change: one **leaky** (big trial reach, low repeat
+  → ~15% repeat) and one **sticky** (modest trial reach, high repeat → 45%+ repeat),
+  both launching inside the analysis window with post-launch runway.
+- **Why:** #4 is a trial/repeat tool built on this exact panel; retrofitting launch
+  dynamics later would break the shared-asset contract. Shawn, 2026-07-06.
+- **Truth principle:** only the *mechanism* is set (trial reach + repeat propensity
+  params × household affinity). The ~15% / 45%+ repeat rates are **computed** from the
+  generated transactions and verified against bands in A6 — not hardcoded outputs.
+- **Scope:** `packages/cinderhaven-household-panel` (A3/A4/A6). **Do not:** hardcode
+  the repeat rates or expose a launch story #4 can't recompute from transactions.
+
 ### 2026-07-06 — New panel tables live in the same cinderhaven-db SSOT as new tables
 - **Why:** Keep one source of truth; #4 reads the same tables.
 - **Do not:** touch the canonical `cinderhaven` raw schema or `cinderhaven-db`

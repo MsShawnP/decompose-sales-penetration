@@ -134,31 +134,39 @@ Steps:
     - Done when: `pip install -e` succeeds; `import cinderhaven_household_panel` works;
       a test asserts the constants equal the locked values and the calendar has 12
       quarters (4 burn-in + 8 analysis) with correct, non-overlapping date ranges.
-- [ ] A2: Household dimension with right-skewed latent propensity
-    - `get_households()` → 5,000 households with id, region, and a gamma-distributed
-      latent purchase propensity (the source of NB overdispersion) + a
-      price-sensitivity attribute.
+- [x] A2: Household dimension with right-skewed latent propensity
+    - `get_households()` → 5,000 households with id, region, a gamma-distributed
+      latent purchase propensity (source of NB overdispersion), a price-sensitivity
+      attribute (drives the erosion mechanism), and an innovator-affinity attribute
+      (drives trial of new-launch items for the #4 stories).
     - Depends on: A1
     - Done when: row count == 5000; `assert_frame_equal` across two calls (reproducible);
       a test asserts the propensity distribution is right-skewed (skewness > 0 and
-      variance/mean overdispersion above a floor), and all canonical regions present.
-- [ ] A3: Price path + price-sensitivity model across the 12 quarters
+      variance/mean overdispersion above a floor), price_sensitivity & innovator_affinity
+      ∈ [0,1], and all canonical regions present.
+- [ ] A3: Price path + price-sensitivity + launch-items model across the 12 quarters
     - Per-SKU base prices aligned to the canonical universe, and a per-quarter price
       path that *raises* prices over a defined stretch (the mechanism behind the
-      erosion window). No penetration outcome is set here — only prices + sensitivity.
+      erosion window). Also designate **two new-launch SKUs** with a launch quarter and
+      trial/repeat mechanics: one "leaky" (big trial reach, low repeat propensity →
+      ~15% repeat) and one "sticky" (modest trial reach, high repeat propensity →
+      45%+ repeat). Only mechanism params here — no outcome is hardcoded.
     - Depends on: A1
-    - Done when: all prices positive; a test asserts the price index rises across the
-      intended quarters and is flat/normal elsewhere; 50 SKUs / 5 lines present;
-      deterministic across two calls.
-- [ ] A4: Transaction generator (the panel)
+    - Done when: all prices positive; price index rises across the intended quarters and
+      is flat elsewhere; 50 SKUs / 5 lines present; `LAUNCH_ITEMS` defines 2 SKUs with a
+      launch quarter inside the analysis window; deterministic across two calls.
+- [ ] A4: Transaction generator (the panel, incl. trial/repeat for launch items)
     - `get_transactions()` → household × date × item × units × spend. Per household
       per quarter, draw trips via Poisson–gamma (NB) from A2 propensity, modulated by
       the A3 price effect on price-sensitive households; each trip emits item lines
-      (units × price).
+      (units × price). Launch items appear only from their launch quarter: trial is
+      gated by innovator-affinity (spike at launch), repeat by the item's repeat
+      propensity × household propensity in later quarters.
     - Depends on: A2, A3
-    - Done when: reproducible (`assert_frame_equal`); a test asserts trips-per-buying-
-      household is right-skewed / overdispersed (var > mean); all spend > 0; only
-      canonical SKUs appear; every transaction date falls inside its quarter range.
+    - Done when: reproducible (`assert_frame_equal`); trips-per-buying-household is
+      right-skewed / overdispersed (var > mean); all spend > 0; only canonical SKUs;
+      every transaction date inside its quarter range; launch items have zero rows
+      before their launch quarter and non-zero after.
 - [ ] A5: Period-metrics + buyer-flow accessors (computed from the panel)
     - `get_period_metrics()` (penetration %, frequency, spend/trip, and its units×price
       split per quarter) and `get_buyer_flow()` (new/retained/lapsed per adjacent
@@ -168,19 +176,20 @@ Steps:
       identities `buying_hh_prev = retained + lapsed` and `buying_hh_curr = retained +
       new`, and the product identity `sales ≈ buying_hh × frequency × spend_per_trip`
       holds per quarter to tolerance ≤ 1e-6.
-- [ ] A6: Verify the erosion window EMERGES (realism/tuning gate)
-    - Run A5 metrics over the seeded stretch; confirm computed sales rise while
-      computed household penetration falls. If it doesn't emerge, tune A2/A3/A4
-      parameters until the mechanism produces it — do not hardcode the outcome.
+- [ ] A6: Verify the seeded stories EMERGE (realism/tuning gate)
+    - (a) Erosion: over the seeded stretch, computed sales rise while computed
+      household penetration falls; at least one *other* window is NOT erosion.
+    - (b) Trial/repeat (for #4): compute trial and repeat rates for the two launch
+      items from the transactions; the leaky item lands ~15% repeat (band, e.g.
+      10–20%) and the sticky item lands 45%+ repeat, with the leaky item showing the
+      larger trial reach. Tune A2/A3/A4 params until they emerge — never hardcode.
     - Depends on: A5
-    - Done when: a test asserts that across the erosion window, quarter-over-quarter
-      sales are up while household penetration is down, using only computed metrics;
-      and the same test confirms at least one *other* window is NOT erosion (so the
-      signal is specific, not global).
+    - Done when: tests assert (a) and (b) using only computed metrics.
 - [ ] B (integration): public API, version lock, full canonical suite, ready for reuse
-    - Finalize the public API (`SEED`, `PANEL_VERSION`, constants, `get_households`,
-      `get_transactions`, `get_period_metrics`, `get_buyer_flow`), set `PANEL_VERSION`,
-      update the package README to match the shipped API.
+    - Finalize the public API (`SEED`, `PANEL_VERSION`, constants, `LAUNCH_ITEMS`,
+      `get_households`, `get_transactions`, `get_period_metrics`, `get_buyer_flow`,
+      and a launch-metadata accessor #4 needs), set `PANEL_VERSION`, update the
+      package README to match the shipped API.
     - Depends on: A1–A6
     - Done when: full pytest suite green; `assert_frame_equal` across two full
       generations of every accessor; a fresh scratch script can `import` the package

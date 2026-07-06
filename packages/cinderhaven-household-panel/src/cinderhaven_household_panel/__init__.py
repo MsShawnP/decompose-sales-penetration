@@ -32,6 +32,7 @@ from .constants import (
     SEED,
     TOTAL_QUARTERS,
 )
+from .households import get_households
 
 __all__ = [
     # canonical universe (reused from cinderhaven-store-universe)
@@ -54,4 +55,6 @@ __all__ = [
     "BURN_IN_QUARTER_LABELS",
     "build_quarters",
     "get_quarters",
+    # household dimension
+    "get_households",
 ]

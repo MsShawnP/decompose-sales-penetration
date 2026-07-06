@@ -66,3 +66,34 @@ class TestCalendar:
 
     def test_reproducible(self):
         pd.testing.assert_frame_equal(hp.get_quarters(), hp.get_quarters())
+
+
+class TestHouseholds:
+    def test_count_locked(self):
+        assert len(hp.get_households()) == 5000
+
+    def test_reproducible(self):
+        pd.testing.assert_frame_equal(hp.get_households(), hp.get_households())
+
+    def test_regions_are_canonical(self):
+        h = hp.get_households()
+        assert set(h["region"]) == set(hp.REGIONS)
+
+    def test_latent_attrs_in_unit_range(self):
+        h = hp.get_households()
+        for col in ("price_sensitivity", "innovator_affinity"):
+            assert h[col].between(0.0, 1.0).all(), f"{col} outside [0,1]"
+
+    def test_propensity_right_skewed_and_overdispersed(self):
+        x = hp.get_households()["base_propensity"].to_numpy()
+        assert (x >= 0).all()
+        m, s = x.mean(), x.std()
+        skew = (((x - m) / s) ** 3).mean()  # Fisher-Pearson sample skewness
+        assert skew > 1.0, f"propensity skew {skew:.2f} not right-skewed enough"
+        assert x.var() / x.mean() > 1.0, "propensity should be overdispersed"
+
+    def test_ids_unique_and_formatted(self):
+        h = hp.get_households()
+        assert h["household_id"].is_unique
+        assert h["household_id"].iloc[0] == "HH-00001"
+        assert h["household_id"].iloc[-1] == "HH-05000"
