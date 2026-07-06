@@ -7,6 +7,52 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-06 — Slice 3 complete: app shell (in-process, no DB)
+
+**Decision (Shawn):** Decompose uses **no database**. Data is the in-process,
+seed-locked `cinderhaven-household-panel` package, warmed once at startup. No
+psycopg2, no `DATABASE_URL`, no Postgres at request time — this keeps Decompose (and
+#4) off the `cinderhaven-db` fragility surface (cred sync, 503 gate, pg health check).
+Corrected CLAUDE.md/SPEC/PLAN/app-CLAUDE and superseded the two DB decisions in
+DECISIONS.md to match. Memory saved (`no-db-in-process-panel`).
+
+**Did (7 commits, 3A–3F):** Vendored `lailara-palette` + assets; full app stack in
+`pyproject.toml`. Built `panel_data.py` (the single data seam: warm_cache, filter
+options, exec defaults, metrics/flow pass-throughs, `decompose()` bundle). Cloned the
+Spin Rate shell: `app.py` (Dash factory + branded loading overlay), `constants.py`
+(tokens + three-lever vocabulary), `lailara_frame.py`, `layout.py` (3 tabs + 4-control
+filter bar + as-of/synthetic disclosure + tab-toggle), `filters.py`, `components.py`,
+`views/` (which_lever/penetration/detail). `wsgi.py` with **liveness-only** `/health`;
+`fly.toml`/`Dockerfile` with no DB secret.
+
+**One output already live end-to-end:** the verdict headline recomputes from the
+filters via the tested `panel_data.decompose`. Whole-brand default (2024-Q4→2025-Q4)
+lands the punchline: *"Sales rose $1,954 … driven mainly by higher spend per trip."*
+
+**No disk cache** (overrode the "cache to disk" ask, flagged to Shawn): panel gen is
+**measured ~0.6s**, already `lru_cached`, and Fly `min_machines_running=1` keeps the
+machine up — a parquet cache would save ~0.6s at rare boots and can't be wired without
+coupling to the package's internal cache. Warm-at-startup instead. DECISIONS logged.
+
+**State:** **77 tests green** (28 app: 13 decomposition + 11 panel_data + 4 tabs
+regression; 49 panel package). Run-verified live: boots clean, `/health` 200, tabs
+switch (only active panel shows), no horizontal overflow at 1280px or 375px, no
+console errors. Note: env has **Dash 4.2.0** (CLAUDE said 3.x) — clone works on 4.x.
+
+**⚠ Slice 5 deploy blocker (FAILURES.md):** peer pkg `cinderhaven-store-universe`
+lives in the doormath repo, not in this build context — the Docker image won't build
+until it's vendored into `packages/` (or a private index). Flagged in the Dockerfile.
+
+**Next:** Slice 4 — the real outputs, each reviewed in-slice: three-lever waterfall
+chart (shared chart template + the #5 chart rules: automargin, non-dup currency ticks,
+bottom legend, bold labels), penetration trend + buyer-flow chart, "which lever"
+diagnostic panel / glossary / tooltips, per-period metric cards + ag-grid detail
+table. Replace the three `slice4_placeholder` blocks. The loading overlay currently
+watches `#main-tabs .custom-tab`; consider re-pointing it at the waterfall chart once
+it exists.
+
+---
+
 ## 2026-07-06 — Slice 2 complete: decomposition math + verdict
 
 **Did:** Built `app/decomposition.py` — exact **Shapley** three-lever waterfall

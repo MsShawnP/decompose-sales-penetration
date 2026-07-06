@@ -10,6 +10,27 @@ they are not re-discovered here.
 
 ## Entries
 
+### 2026-07-06 — Deploy will fail until `cinderhaven-store-universe` is vendored (Slice 5 blocker)
+
+**Found during:** Slice 3 (writing the Dockerfile).
+
+**Problem:** The panel package `cinderhaven-household-panel` depends on the peer
+package `cinderhaven-store-universe` (the canonical-universe SSOT), which lives in
+the **doormath** repo (`doormath-sales-penetration/packages/cinderhaven-store-universe`),
+installed editable on this machine. The Docker build context is this repo only, so
+`pip install cinderhaven-household-panel` inside the image cannot resolve it and the
+build will fail.
+
+**Not fixed in Slice 3** (deploy is Slice 5, gated on Shawn). Scaffolded the
+Dockerfile with the correct structure and a prominent blocker comment. Before deploy,
+either vendor `cinderhaven-store-universe` into `packages/` (like lailara-palette) or
+install it from a private index. Vendoring duplicates the canonical universe, so it's
+a decision to confirm with Shawn (precedent: lailara-palette was vendored).
+
+**Status:** Open — pre-deploy task. **Tags:** deploy, docker, peer-package, slice-5
+
+---
+
 ### 2026-07-06 — Could not rename the misspelled project folder in place
 
 **Attempted:** `mv` / `Rename-Item` of `decomppose-sales-penetration` →

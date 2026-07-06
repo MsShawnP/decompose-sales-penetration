@@ -74,12 +74,15 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - [x] New / retained / lapsed buyer decomposition  (in panel A5)
 - [x] Plain-language "which lever" verdict generator
 
-### Slice 3 — App shell (clone Spin Rate; in-process, no DB)
-- [ ] Clone app/ structure, lailara_frame, assets, lailara-palette
-- [ ] `panel_data.py`: import `cinderhaven_household_panel`, generate once, cache to disk (parquet/pickle), serve metrics/flow/decomposition per filter combo — no psycopg2, no DATABASE_URL
-- [ ] Liveness-only health: Fly check on a liveness endpoint (200 while up). No DB-readiness endpoint, no 503 gate (nothing to degrade)
-- [ ] Branded pre-hydration loading state (no blank white first paint)
-- [ ] Full stack in root pyproject.toml (dash, plotly, dash-ag-grid, gunicorn, python-dotenv, lailara-palette); Dockerfile + fly.toml (no DATABASE_URL secret)
+### Slice 3 — App shell (clone Spin Rate; in-process, no DB) ✅
+- [x] Clone app/ structure, lailara_frame, assets, lailara-palette
+- [x] `panel_data.py`: import `cinderhaven_household_panel`, warm once at startup, serve metrics/flow/decomposition per filter combo — no psycopg2, no DATABASE_URL. (No disk cache: gen is ~0.6s + lru_cached + machine stays up — measured, DECISIONS logged.)
+- [x] Liveness-only health: Fly check on `/health` (200 while up). No DB-readiness endpoint, no 503 gate
+- [x] Branded pre-hydration loading state (no blank white first paint)
+- [x] Full stack in root pyproject.toml (dash, plotly, dash-ag-grid, gunicorn, python-dotenv, lailara-palette); Dockerfile + fly.toml (no DATABASE_URL secret)
+- [x] One output live end-to-end: verdict headline recomputes from filters (proves the pipeline)
+- [x] Tabs-regression test + run-verified (health 200, tabs switch, no overflow @1280/@375)
+- ⚠ Deploy blocker for Slice 5: peer pkg `cinderhaven-store-universe` (in doormath) not in build context — vendor before image builds. See FAILURES.md.
 
 ### Slice 4 — Outputs (each reviewed in-slice)
 - [ ] Three-lever waterfall chart (shared chart template; inspect for clipped labels / dup ticks / legend overlap)
