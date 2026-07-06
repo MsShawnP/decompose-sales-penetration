@@ -14,6 +14,8 @@ Everything here is mechanism. Penetration, frequency, and repeat rates are compu
 from the resulting rows downstream (A5/A6), never written in.
 """
 
+import functools
+
 import numpy as np
 import pandas as pd
 
@@ -188,8 +190,14 @@ def _launch_transactions(hh: pd.DataFrame, quarters: pd.DataFrame,
     return pd.concat(rows, ignore_index=True) if rows else pd.DataFrame(columns=_COLUMNS)
 
 
+@functools.lru_cache(maxsize=1)
 def get_transactions() -> pd.DataFrame:
-    """Return the full, deterministic household panel (household x trip x item)."""
+    """Return the full, deterministic household panel (household x trip x item).
+
+    Cached: generation is deterministic, so the panel is built once per process and
+    reused (metrics/decomposition and the app's filter callbacks all read from it).
+    Treat the returned frame as read-only — filters create their own copies.
+    """
     hh = get_households()
     quarters = get_quarters()
     prices = get_sku_prices()

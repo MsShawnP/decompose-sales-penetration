@@ -68,11 +68,11 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - [x] Panel-realism checks (skew, frequency distribution) as tests
 
 ### Slice 2 — Decomposition math
-- [ ] Household penetration %, purchase frequency, spend per trip (units/trip × price/unit)
-- [ ] Three-lever period-over-period waterfall
-- [ ] **Unit test: waterfall reconciles exactly to the sales delta** (hard gate)
-- [ ] New / retained / lapsed buyer decomposition
-- [ ] Plain-language "which lever" verdict generator
+- [x] Household penetration %, purchase frequency, spend per trip (units/trip × price/unit)  (in panel A5)
+- [x] Three-lever period-over-period waterfall
+- [x] **Unit test: waterfall reconciles exactly to the sales delta** (hard gate)
+- [x] New / retained / lapsed buyer decomposition  (in panel A5)
+- [x] Plain-language "which lever" verdict generator
 
 ### Slice 3 — App shell (clone Spin Rate)
 - [ ] Clone app/ structure, lailara_frame, assets, lailara-palette
@@ -103,7 +103,7 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 
 ## Definition of done for this arc
 
-- [ ] Waterfall reconciliation unit test passes exactly.
+- [x] Waterfall reconciliation unit test passes exactly.
 - [x] Panel package is versioned, seed-locked, reproducible, and importable by #4.
 - [ ] App deployed, resilient `/health` (DB outage → branded shell, not 503).
 - [ ] Every chart individually inspected; tabs regression test green.
