@@ -2,22 +2,15 @@ FROM python:3.11-slim AS base
 
 WORKDIR /app
 
-# Vendored + peer packages first (they change less often than app code).
+# Vendored packages first (they change less often than app code). Install order
+# matters: cinderhaven-store-universe is the canonical-universe SSOT that the
+# household panel depends on, so it goes in before the panel.
 COPY packages/ /app/packages/
 RUN pip install --no-cache-dir /app/packages/lailara-palette/ \
+ && pip install --no-cache-dir /app/packages/cinderhaven-store-universe/ \
  && pip install --no-cache-dir /app/packages/cinderhaven-household-panel/
 
-# ── SLICE 5 DEPLOY BLOCKER ───────────────────────────────────────────────────
-# cinderhaven-household-panel requires the peer package cinderhaven-store-universe,
-# which currently lives in the doormath repo
-# (doormath-sales-penetration/packages/cinderhaven-store-universe) and is NOT in
-# this build context. The install above will fail to resolve it until it is made
-# available — vendor it into packages/ (like lailara-palette) or install from a
-# private index. This is a pre-deploy task; deploy itself is gated on Shawn.
-# Tracked in HANDOFF.md / FAILURES.md.
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Install app dependencies (the two local packages above already satisfy their pins).
+# Install app dependencies (the local packages above already satisfy their pins).
 COPY pyproject.toml /app/
 RUN pip install --no-cache-dir .
 
