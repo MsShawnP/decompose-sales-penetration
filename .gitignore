@@ -1,0 +1,48 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials.*
+secrets.*
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data files (synthetic panel is generated deterministically from locked seeds,
+# not committed as data files — mirror cinderhaven-store-universe)
+data/raw/
+*.csv
+*.parquet
+*.xlsx
+*.xls
+!data/synthetic/*.csv
+
+# Logs
+logs/
+*.log
+
+# Dev artifacts (local UI review — not app history)
+review.yaml
+screenshots/
+
+# Local-only audit notes (for my eyes, not repo history)
+docs/AUDIT-*.md
