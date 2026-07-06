@@ -7,8 +7,6 @@ Two charts, both recomputed from the panel for the current filters:
      quarter pair, so churn and acquisition read at a glance.
 """
 
-import json
-
 import plotly.graph_objects as go
 from dash import Input, Output, callback, dcc, html
 
@@ -60,16 +58,6 @@ def layout():
     )
 
 
-def _filters(filter_json):
-    filters = json.loads(filter_json) if filter_json else {}
-    return (
-        filters.get("period_a") or panel_data.DEFAULT_PERIOD_A,
-        filters.get("period_b") or panel_data.DEFAULT_PERIOD_B,
-        filters.get("product_line"),
-        filters.get("retailer"),
-    )
-
-
 def _build_penetration_trend(metrics, period_a, period_b):
     analysis = metrics[metrics["is_analysis"]].copy()
     x = analysis["quarter_label"].tolist()
@@ -79,26 +67,24 @@ def _build_penetration_trend(metrics, period_a, period_b):
         go.Scatter(
             x=x,
             y=y,
-            mode="lines+markers",
+            mode="lines+markers+text",
             line=dict(color=CHICAGO_20, width=3),
             marker=dict(size=8, color=CHICAGO_20),
+            text=[f"{v:.0%}" for v in y],
+            textposition="top center",
+            textfont=dict(family=FONT_SANS, size=11, color=INK),
+            cliponaxis=False,
             hovertemplate="%{x}<br>Penetration %{y:.1%}<extra></extra>",
             name="Penetration",
         )
     )
 
     y_max = max(y) if y else 0.1
+    # xaxis inherits economist_layout's default.
     layout = economist_layout(
         title=dict(
             text="Household penetration by quarter",
             font=dict(family=FONT_SERIF, size=22, color=INK),
-        ),
-        xaxis=dict(
-            showgrid=False,
-            showline=True,
-            linecolor=GRIDLINE,
-            automargin=True,
-            tickfont=dict(family=FONT_SANS, size=12, color=TEXT_SECONDARY),
         ),
         yaxis=dict(
             title=dict(text="Penetration %", font=dict(family=FONT_SANS, size=14, color=TEXT_SECONDARY)),
@@ -134,31 +120,38 @@ def _build_buyer_flow(flow):
     new = flow["new"].tolist()
     lapsed = [-v for v in flow["lapsed"].tolist()]  # below zero = churn
 
+    # Bold count labels inside each segment (ints for counts, per the chart rules);
+    # uniformtext hides any that can't fit rather than letting them overflow.
+    label_font = dict(family=FONT_SANS, size=11, color="#ffffff")
     fig = go.Figure()
     fig.add_bar(
         x=x, y=retained, name="Retained", marker_color=HK_35,
+        text=retained, texttemplate="%{text:,}", textposition="inside",
+        insidetextfont=label_font,
         hovertemplate="%{x}<br>Retained %{y:,}<extra></extra>",
     )
     fig.add_bar(
         x=x, y=new, name="New", marker_color=CHICAGO_20,
+        text=new, texttemplate="%{text:,}", textposition="inside",
+        insidetextfont=label_font,
         hovertemplate="%{x}<br>New %{y:,}<extra></extra>",
     )
     fig.add_bar(
         x=x, y=lapsed, name="Lapsed", marker_color=TOKYO_40,
         customdata=flow["lapsed"].tolist(),
+        text=flow["lapsed"].tolist(), texttemplate="%{text:,}", textposition="inside",
+        insidetextfont=label_font,
         hovertemplate="%{x}<br>Lapsed %{customdata:,}<extra></extra>",
     )
 
+    # xaxis inherits economist_layout's default.
     layout = economist_layout(
         title=dict(
             text="Where buyers came from and went",
             font=dict(family=FONT_SERIF, size=22, color=INK),
         ),
         barmode="relative",
-        xaxis=dict(
-            showgrid=False, showline=True, linecolor=GRIDLINE, automargin=True,
-            tickfont=dict(family=FONT_SANS, size=12, color=TEXT_SECONDARY),
-        ),
+        uniformtext=dict(minsize=9, mode="hide"),
         yaxis=dict(
             title=dict(text="Households", font=dict(family=FONT_SANS, size=14, color=TEXT_SECONDARY)),
             showgrid=True, gridcolor=GRIDLINE, gridwidth=1, showline=False,
@@ -179,7 +172,7 @@ def register_callbacks():
         Input("filter-state", "data"),
     )
     def _update(filter_json):
-        period_a, period_b, line, retailer = _filters(filter_json)
+        period_a, period_b, line, retailer = panel_data.parse_filter_state(filter_json)
         metrics = panel_data.get_metrics(line, retailer)
         flow = panel_data.get_flow(line, retailer)
         # Buyer flow only within the analysis window (transitions into an analysis Q).

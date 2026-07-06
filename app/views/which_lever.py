@@ -6,8 +6,6 @@ Period-A sales → ± buying households → ± purchase frequency → ± spend p
 Period-B sales, and the bars reconcile to the sales change by construction.
 """
 
-import json
-
 import plotly.graph_objects as go
 from dash import Input, Output, callback, dcc, html
 
@@ -17,12 +15,10 @@ from app.components import definitions_panel, view_heading, why_this_matters
 from app.constants import (
     FONT_SANS,
     FONT_SERIF,
-    GRIDLINE,
     INK,
     LEVER_LABELS,
     LEVER_ORDER,
     REFERENCE,
-    TEXT_SECONDARY,
     WATERFALL_DECREASE,
     WATERFALL_INCREASE,
     WATERFALL_TOTAL,
@@ -60,24 +56,16 @@ def layout():
     )
 
 
-def _filters(filter_json):
-    filters = json.loads(filter_json) if filter_json else {}
-    return (
-        filters.get("period_a") or panel_data.DEFAULT_PERIOD_A,
-        filters.get("period_b") or panel_data.DEFAULT_PERIOD_B,
-        filters.get("product_line"),
-        filters.get("retailer"),
-    )
-
-
 def _verdict_children(wf, verdict, period_a, period_b):
-    direction_class = "delta-up" if wf.delta >= 0 else "delta-down"
+    if wf.delta == 0:
+        change, direction_class = f"no change vs {period_a}", "delta-flat"
+    else:
+        sign = "+" if wf.delta > 0 else "−"
+        change = f"{sign}{fmt_dollars(abs(wf.delta))} vs {period_a}"
+        direction_class = "delta-up" if wf.delta > 0 else "delta-down"
     return [
         html.Div(fmt_dollars(wf.sales_b) + f" in {period_b}", className="verdict-figure"),
-        html.Div(
-            f"{'+' if wf.delta >= 0 else '−'}{fmt_dollars(abs(wf.delta))} vs {period_a}",
-            className=f"verdict-change {direction_class}",
-        ),
+        html.Div(change, className=f"verdict-change {direction_class}"),
         html.P(verdict["sentence"], className="verdict-sentence"),
     ]
 
@@ -122,17 +110,11 @@ def _build_waterfall_figure(wf, period_a, period_b):
     )
 
     axis_max = max(wf.sales_a, wf.sales_b)
+    # xaxis inherits economist_layout's default (showline, automargin, tickfont).
     layout = economist_layout(
         title=dict(
             text=f"What moved sales, {period_a} → {period_b}",
             font=dict(family=FONT_SERIF, size=22, color=INK),
-        ),
-        xaxis=dict(
-            showgrid=False,
-            showline=True,
-            linecolor=GRIDLINE,
-            automargin=True,
-            tickfont=dict(family=FONT_SANS, size=12, color=TEXT_SECONDARY),
         ),
         yaxis=dollar_yaxis(axis_max, title="Sales ($)"),
         showlegend=False,
@@ -149,7 +131,7 @@ def register_callbacks():
         Input("filter-state", "data"),
     )
     def _update(filter_json):
-        period_a, period_b, line, retailer = _filters(filter_json)
+        period_a, period_b, line, retailer = panel_data.parse_filter_state(filter_json)
         result = panel_data.decompose(period_a, period_b, line, retailer)
         wf, verdict = result["waterfall"], result["verdict"]
         return (

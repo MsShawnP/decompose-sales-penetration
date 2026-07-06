@@ -5,8 +5,6 @@ on each; the table is every metric per quarter — the numbers behind the waterf
 Both recompute from the panel for the current filters.
 """
 
-import json
-
 import dash_ag_grid as dag
 from dash import Input, Output, callback, html
 
@@ -18,6 +16,29 @@ from app.constants import fmt_dollars, fmt_number, fmt_pct
 def _fmt_cents(value):
     """Dollars with cents — for per-trip / per-unit amounts where cents matter."""
     return "N/A" if value is None else f"${value:,.2f}"
+
+
+def _sign(delta: float) -> str:
+    return "+" if delta >= 0 else "−"
+
+
+# Delta formatters — each takes the signed A→B change and formats it with a sign in
+# the metric's own unit. Carried per-metric in _CARD_METRICS so the delta unit is
+# data-driven, not inferred from the (rewordable) display label.
+def _dollar_delta(d):
+    return f"{_sign(d)}{fmt_dollars(abs(d))}"
+
+
+def _cents_delta(d):
+    return f"{_sign(d)}{_fmt_cents(abs(d))}"
+
+
+def _pp_delta(d):
+    return f"{_sign(d)}{abs(d) * 100:.1f} pp"
+
+
+def _trips_delta(d):
+    return f"{_sign(d)}{abs(d):.2f} trips"
 
 
 # Table columns: (field, header, formatter). Quarter is the key column — never
@@ -34,11 +55,12 @@ _COLUMNS = [
 ]
 
 # The three levers as cards, plus the sales headline.
+# (field, label, value formatter, delta formatter)
 _CARD_METRICS = [
-    ("sales", "Sales", fmt_dollars),
-    ("penetration", "Household penetration", fmt_pct),
-    ("frequency", "Purchase frequency", lambda v: f"{v:.2f} trips"),
-    ("spend_per_trip", "Spend per trip", _fmt_cents),
+    ("sales", "Sales", fmt_dollars, _dollar_delta),
+    ("penetration", "Household penetration", fmt_pct, _pp_delta),
+    ("frequency", "Purchase frequency", lambda v: f"{v:.2f} trips", _trips_delta),
+    ("spend_per_trip", "Spend per trip", _fmt_cents, _cents_delta),
 ]
 
 
@@ -58,30 +80,17 @@ def layout():
     )
 
 
-def _filters(filter_json):
-    filters = json.loads(filter_json) if filter_json else {}
-    return (
-        filters.get("period_a") or panel_data.DEFAULT_PERIOD_A,
-        filters.get("period_b") or panel_data.DEFAULT_PERIOD_B,
-        filters.get("product_line"),
-        filters.get("retailer"),
-    )
-
-
-def _metric_card(label, fmt, a_val, b_val):
+def _metric_card(label, value_fmt, delta_fmt, a_val, b_val):
     delta = b_val - a_val
     up = delta >= 0
-    if label == "Household penetration":
-        change = f"{'+' if up else '−'}{abs(delta) * 100:.1f} pp"
-    else:
-        change = f"{'+' if up else '−'}{fmt(abs(delta))}"
+    change = delta_fmt(delta)
     return html.Div(
         [
             html.Div(label, className="metric-card-label"),
-            html.Div(fmt(b_val), className="metric-card-value"),
+            html.Div(value_fmt(b_val), className="metric-card-value"),
             html.Div(
                 [
-                    html.Span(f"from {fmt(a_val)}", className="metric-card-prev"),
+                    html.Span(f"from {value_fmt(a_val)}", className="metric-card-prev"),
                     html.Span(change, className=f"metric-card-delta {'delta-up' if up else 'delta-down'}"),
                 ],
                 className="metric-card-foot",
@@ -95,8 +104,8 @@ def _build_metric_cards(metrics, period_a, period_b):
     m = metrics.set_index("quarter_label")
     a, b = m.loc[period_a], m.loc[period_b]
     cards = [
-        _metric_card(label, fmt, a[field], b[field])
-        for field, label, fmt in _CARD_METRICS
+        _metric_card(label, value_fmt, delta_fmt, a[field], b[field])
+        for field, label, value_fmt, delta_fmt in _CARD_METRICS
     ]
     return [
         html.Div(f"{period_a} → {period_b}", className="metric-cards-caption"),
@@ -151,7 +160,7 @@ def register_callbacks():
         Input("main-tabs", "value"),
     )
     def _update(filter_json, _active_tab):
-        period_a, period_b, line, retailer = _filters(filter_json)
+        period_a, period_b, line, retailer = panel_data.parse_filter_state(filter_json)
         metrics = panel_data.get_metrics(line, retailer)
         return (
             _build_metric_cards(metrics, period_a, period_b),

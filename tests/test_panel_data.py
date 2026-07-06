@@ -31,6 +31,22 @@ class TestPeriods:
         assert b in pd_layer.analysis_quarters()
 
 
+class TestParseFilterState:
+    """The single decoder of the filter-state store (shared by all three views)."""
+
+    def test_empty_or_none_falls_back_to_exec_defaults(self):
+        for empty in (None, "", "{}"):
+            assert pd_layer.parse_filter_state(empty) == ("2024-Q4", "2025-Q4", "__all__", "__all__")
+
+    def test_full_state_is_passed_through_verbatim(self):
+        import json
+
+        state = json.dumps(
+            {"period_a": "2024-Q1", "period_b": "2025-Q2", "product_line": "AS", "retailer": "RET-WALMART"}
+        )
+        assert pd_layer.parse_filter_state(state) == ("2024-Q1", "2025-Q2", "AS", "RET-WALMART")
+
+
 class TestFilterOptions:
     def test_product_line_options_lead_with_all_then_every_line(self):
         opts = pd_layer.product_line_options()

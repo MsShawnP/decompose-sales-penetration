@@ -105,6 +105,21 @@ def which_lever_verdict(wf: Waterfall, threshold: float = DEFAULT_DOMINANCE_THRE
     contribs = wf.contributions
     gross = sum(abs(v) for v in contribs.values())
     shares = {k: (abs(v) / gross if gross else 0.0) for k, v in contribs.items()}
+
+    # Nothing moved (e.g. period_a == period_b): every contribution is exactly zero,
+    # so gross == 0. Return a neutral verdict rather than falling through to the
+    # "mixed" branch, which would falsely claim levers rose (a 0.0 contribution maps
+    # to the "up" phrase and delta >= 0 reads as "rose").
+    if gross == 0:
+        return {
+            "headline_lever": "none",
+            "direction": "flat",
+            "dominant": False,
+            "shares": shares,
+            "contributions": contribs,
+            "sentence": f"Sales were unchanged between {wf.period_a} and {wf.period_b}.",
+        }
+
     ranked = sorted(contribs, key=lambda k: abs(contribs[k]), reverse=True)
     top = ranked[0]
 

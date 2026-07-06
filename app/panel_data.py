@@ -14,10 +14,12 @@ without coupling to the package's internal transaction cache (which app/CLAUDE.m
 forbids re-implementing). Measured, not assumed — see DECISIONS.md.
 """
 
+import json
 import logging
 import time
 
 import cinderhaven_household_panel as panel
+import pandas as pd
 
 from app.decomposition import three_lever_waterfall, which_lever_verdict
 
@@ -69,7 +71,24 @@ def default_periods() -> tuple[str, str]:
     return DEFAULT_PERIOD_A, DEFAULT_PERIOD_B
 
 
-def product_line_options() -> list[dict]:
+def parse_filter_state(filter_json: str | None) -> tuple[str, str, str, str]:
+    """Decode the shared filter-state store into (period_a, period_b, line, retailer).
+
+    The single reader of the filter-state JSON contract — every view calls this
+    instead of re-decoding the store, so the four-key shape lives in one place
+    alongside DEFAULT_FILTER_STATE. Periods fall back to the exec defaults; the
+    line/retailer sentinels ('__all__') are passed through and normalized downstream.
+    """
+    filters = json.loads(filter_json) if filter_json else {}
+    return (
+        filters.get("period_a") or DEFAULT_PERIOD_A,
+        filters.get("period_b") or DEFAULT_PERIOD_B,
+        filters.get("product_line") or "__all__",
+        filters.get("retailer") or "__all__",
+    )
+
+
+def product_line_options() -> list[dict[str, str]]:
     """Dropdown options for the product-line filter, with an 'All lines' default."""
     options = [{"label": "All lines", "value": "__all__"}]
     for code, meta in panel.PRODUCT_LINES.items():
@@ -77,7 +96,7 @@ def product_line_options() -> list[dict]:
     return options
 
 
-def retailer_options() -> list[dict]:
+def retailer_options() -> list[dict[str, str]]:
     """Dropdown options for the retailer filter, with an 'All retailers' default."""
     options = [{"label": "All retailers", "value": "__all__"}]
     for retailer_id, meta in panel.RETAILERS.items():
@@ -85,22 +104,25 @@ def retailer_options() -> list[dict]:
     return options
 
 
-def _normalize(value):
+def _normalize(value: str | None) -> str | None:
     """Map the sentinel '__all__' (and empty) to None for the panel accessors."""
     return None if value in (None, "__all__", "") else value
 
 
-def get_metrics(product_line=None, retailer_id=None):
+def get_metrics(product_line: str | None = None, retailer_id: str | None = None) -> pd.DataFrame:
     """Per-quarter metrics for a filter combination (thin pass-through)."""
     return panel.get_period_metrics(_normalize(product_line), _normalize(retailer_id))
 
 
-def get_flow(product_line=None, retailer_id=None):
+def get_flow(product_line: str | None = None, retailer_id: str | None = None) -> pd.DataFrame:
     """New/retained/lapsed buyer flow for a filter combination (thin pass-through)."""
     return panel.get_buyer_flow(_normalize(product_line), _normalize(retailer_id))
 
 
-def decompose(period_a: str, period_b: str, product_line=None, retailer_id=None) -> dict:
+def decompose(
+    period_a: str, period_b: str,
+    product_line: str | None = None, retailer_id: str | None = None,
+) -> dict:
     """Bundle the three-lever waterfall and plain-language verdict for a period pair.
 
     This is what the views render: the Shapley waterfall (reconciles to ΔSales) plus

@@ -75,10 +75,15 @@ def _nice_dollar_dtick(max_value: float) -> float:
 
     raw = max_value / 6.0
     magnitude = 10 ** math.floor(math.log10(raw))
+    step = 10 * magnitude
     for mult in (1, 2, 2.5, 5, 10):
         if mult * magnitude >= raw:
-            return mult * magnitude
-    return 10 * magnitude
+            step = mult * magnitude
+            break
+    # Never step below $1: the axis formats whole dollars, so a sub-dollar step
+    # would render duplicate labels ($0, $0, $1, …). Real dollar axes here are in
+    # the thousands, but this keeps the guarantee total.
+    return max(1.0, step)
 
 
 def dollar_yaxis(max_value: float, title: str = "Sales ($)", **overrides) -> dict:

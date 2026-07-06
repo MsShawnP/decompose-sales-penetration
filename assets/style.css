@@ -520,6 +520,7 @@ html, body {
 }
 .verdict-change.delta-up { color: var(--ll-hk-25); }
 .verdict-change.delta-down { color: var(--ll-tokyo-40); }
+.verdict-change.delta-flat { color: var(--ll-reference, #666); }
 .verdict-sentence {
     font-family: var(--ll-sans);
     font-size: 17px;
