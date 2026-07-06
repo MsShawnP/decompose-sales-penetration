@@ -19,6 +19,17 @@ def view_heading(title: str, blurb: str):
     )
 
 
+def why_this_matters(text: str):
+    """A muted, collapsible 'why this matters' panel for exec context."""
+    return html.Details(
+        [
+            html.Summary("Why this matters", className="why-toggle"),
+            html.P(text, className="why-body"),
+        ],
+        className="why-details",
+    )
+
+
 def slice4_placeholder(label: str, note: str):
     """A labelled placeholder standing in for a Slice 4 output.
 

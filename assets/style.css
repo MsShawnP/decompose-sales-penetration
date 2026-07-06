@@ -562,3 +562,38 @@ html, body {
     color: var(--ll-disabled, #b3b3b3);
     margin: 0;
 }
+
+/* Chart caption + "why this matters" (Slice 4) */
+.chart-caption {
+    font-family: var(--ll-sans);
+    font-size: 13px;
+    color: var(--ll-reference, #666);
+    margin: 6px 0 18px;
+    text-align: center;
+}
+.why-details {
+    border-top: 1px solid var(--ll-separator, #e0e0e0);
+    margin-top: 8px;
+    padding-top: 12px;
+}
+.why-toggle {
+    font-family: var(--ll-sans);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ll-chicago-20);
+    cursor: pointer;
+    list-style: none;
+}
+.why-toggle::-webkit-details-marker { display: none; }
+.why-toggle::before { content: "＋  "; color: var(--ll-chicago-20); }
+.why-details[open] > .why-toggle::before { content: "－  "; }
+.why-body {
+    font-family: var(--ll-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ll-text, #333);
+    max-width: 64ch;
+    margin: 10px 0 0;
+}

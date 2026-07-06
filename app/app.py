@@ -112,9 +112,11 @@ _LOADING_OVERLAY = """
             if (el && el.parentNode) el.parentNode.removeChild(el);
           }, 400);
         }
-        // The shell is interactive once the tab navigation has rendered.
+        // The default tab is interactive once Plotly has drawn the waterfall (its
+        // data callback has returned). If the chart never paints, the SAFETY_MS
+        // timeout below hides the overlay anyway, so the visitor is never trapped.
         function ready() {
-          return !!document.querySelector('#main-tabs .custom-tab');
+          return !!document.querySelector('#waterfall-chart .js-plotly-plot');
         }
         function check() {
           if (ready()) { hide(); return true; }
