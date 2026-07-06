@@ -154,8 +154,11 @@ class TestTransactions:
         assert len(tx) > 0
         assert list(tx.columns) == [
             "household_id", "quarter_index", "quarter_label", "date",
-            "sku_id", "product_line", "units", "unit_price", "spend",
+            "sku_id", "product_line", "retailer_id", "units", "unit_price", "spend",
         ]
+
+    def test_retailers_are_canonical(self, tx):
+        assert set(tx["retailer_id"]).issubset(set(hp.RETAILERS))
 
     def test_reproducible(self):
         pd.testing.assert_frame_equal(hp.get_transactions(), hp.get_transactions())
@@ -193,3 +196,51 @@ class TestTransactions:
             assert (rows["quarter_index"] >= lq).all(), f"{sku} sold before launch"
             assert (rows["quarter_index"] == lq).any(), f"{sku} has no trial-quarter sales"
             assert (rows["quarter_index"] > lq).any(), f"{sku} has no post-launch sales"
+
+
+class TestPeriodMetrics:
+    def test_one_row_per_quarter_in_order(self):
+        m = hp.get_period_metrics()
+        assert len(m) == 12
+        assert m["quarter_index"].tolist() == list(range(12))
+
+    def test_penetration_in_unit_interval(self):
+        m = hp.get_period_metrics()
+        assert m["penetration"].between(0.0, 1.0).all()
+
+    def test_product_identity_holds(self):
+        # buying_households x frequency x spend_per_trip == sales, every quarter.
+        m = hp.get_period_metrics()
+        lhs = m["buying_households"] * m["frequency"] * m["spend_per_trip"]
+        assert ((lhs - m["sales"]).abs() <= 1e-6).all()
+
+    def test_spend_per_trip_splits_into_units_x_price(self):
+        m = hp.get_period_metrics()
+        lhs = m["units_per_trip"] * m["price_per_unit"]
+        assert ((lhs - m["spend_per_trip"]).abs() <= 1e-6).all()
+
+    def test_reproducible(self):
+        pd.testing.assert_frame_equal(hp.get_period_metrics(), hp.get_period_metrics())
+
+    def test_filters_reduce_sales(self):
+        total = hp.get_period_metrics()["sales"].sum()
+        one_line = hp.get_period_metrics(product_line="AS")["sales"].sum()
+        one_ret = hp.get_period_metrics(retailer_id="RET-WALMART")["sales"].sum()
+        assert 0 < one_line < total
+        assert 0 < one_ret < total
+
+
+class TestBuyerFlow:
+    def test_eleven_adjacent_pairs(self):
+        f = hp.get_buyer_flow()
+        assert len(f) == 11
+
+    def test_flow_identities_hold(self):
+        f = hp.get_buyer_flow()
+        assert (f["prior_buyers"] == f["retained"] + f["lapsed"]).all()
+        assert (f["current_buyers"] == f["retained"] + f["new"]).all()
+
+    def test_counts_nonnegative(self):
+        f = hp.get_buyer_flow()
+        for col in ("retained", "new", "lapsed", "prior_buyers", "current_buyers"):
+            assert (f[col] >= 0).all()

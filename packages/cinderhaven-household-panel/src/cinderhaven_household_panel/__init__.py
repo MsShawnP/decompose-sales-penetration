@@ -40,6 +40,7 @@ from .pricing import (
     get_sku_prices,
 )
 from .transactions import get_transactions
+from .metrics import get_buyer_flow, get_period_metrics
 
 __all__ = [
     # canonical universe (reused from cinderhaven-store-universe)
@@ -71,4 +72,7 @@ __all__ = [
     "LAUNCH_ITEMS",
     # transactions (the panel)
     "get_transactions",
+    # period metrics + buyer flow
+    "get_period_metrics",
+    "get_buyer_flow",
 ]

@@ -19,7 +19,7 @@ import pandas as pd
 
 from ._rng import child_rng
 from .calendar import get_quarters
-from .constants import ALL_SKUS, N_HOUSEHOLDS
+from .constants import ALL_SKUS, N_HOUSEHOLDS, RETAILERS
 from .households import get_households
 from .pricing import (
     LAUNCH_ITEMS,
@@ -38,8 +38,16 @@ _LAUNCH_REPEAT_QUARTER_PROB = 0.5
 
 _COLUMNS = [
     "household_id", "quarter_index", "quarter_label", "date",
-    "sku_id", "product_line", "units", "unit_price", "spend",
+    "sku_id", "product_line", "retailer_id", "units", "unit_price", "spend",
 ]
+
+# Retailer of each trip, drawn in proportion to door count (bigger banners get more
+# of the household's trips). Households shop multiple retailers across the panel.
+_RETAILER_IDS = np.array(list(RETAILERS.keys()))
+_RETAILER_WEIGHTS = np.array(
+    [RETAILERS[r]["door_count"] for r in _RETAILER_IDS], dtype=float
+)
+_RETAILER_WEIGHTS /= _RETAILER_WEIGHTS.sum()
 
 
 def _line_of(sku: str) -> str:
@@ -88,6 +96,7 @@ def _base_transactions(hh: pd.DataFrame, quarters: pd.DataFrame,
         unit_price = np.round(general_base_price[choice] * pidx, 2)
         units = 1 + rng.poisson(0.6, size=total)
         spend = np.round(units * unit_price, 2)
+        retailers = _RETAILER_IDS[rng.choice(len(_RETAILER_IDS), size=total, p=_RETAILER_WEIGHTS)]
 
         frames.append(pd.DataFrame({
             "household_id": hh_ids[hh_pos],
@@ -96,6 +105,7 @@ def _base_transactions(hh: pd.DataFrame, quarters: pd.DataFrame,
             "date": dates,
             "sku_id": skus,
             "product_line": lines,
+            "retailer_id": retailers,
             "units": units,
             "unit_price": unit_price,
             "spend": spend,
@@ -141,6 +151,7 @@ def _launch_transactions(hh: pd.DataFrame, quarters: pd.DataFrame,
             dates = qrow["start_date"] + pd.to_timedelta(offsets, unit="D")
             units = 1 + rng.poisson(0.4, size=len(pos_array))
             unit_price = round(base_price * pidx, 2)
+            retailers = _RETAILER_IDS[rng.choice(len(_RETAILER_IDS), size=len(pos_array), p=_RETAILER_WEIGHTS)]
             rows.append(pd.DataFrame({
                 "household_id": hh_ids[pos_array],
                 "quarter_index": qi,
@@ -148,6 +159,7 @@ def _launch_transactions(hh: pd.DataFrame, quarters: pd.DataFrame,
                 "date": dates,
                 "sku_id": sku,
                 "product_line": line,
+                "retailer_id": retailers,
                 "units": units,
                 "unit_price": unit_price,
                 "spend": np.round(units * unit_price, 2),

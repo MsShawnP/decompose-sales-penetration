@@ -167,7 +167,7 @@ Steps:
       right-skewed / overdispersed (var > mean); all spend > 0; only canonical SKUs;
       every transaction date inside its quarter range; launch items have zero rows
       before their launch quarter and non-zero after.
-- [ ] A5: Period-metrics + buyer-flow accessors (computed from the panel)
+- [x] A5: Period-metrics + buyer-flow accessors (computed from the panel)
     - `get_period_metrics()` (penetration %, frequency, spend/trip, and its units×price
       split per quarter) and `get_buyer_flow()` (new/retained/lapsed per adjacent
       quarter pair), all derived from A4 transactions.
