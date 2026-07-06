@@ -84,11 +84,12 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - [x] Tabs-regression test + run-verified (health 200, tabs switch, no overflow @1280/@375)
 - ⚠ Deploy blocker for Slice 5: peer pkg `cinderhaven-store-universe` (in doormath) not in build context — vendor before image builds. See FAILURES.md.
 
-### Slice 4 — Outputs (each reviewed in-slice)
-- [ ] Three-lever waterfall chart (shared chart template; inspect for clipped labels / dup ticks / legend overlap)
-- [ ] Penetration trend + buyer-flow (new/retained/lapsed) chart
-- [ ] "Which lever" diagnostic panel; glossary; "why this matters"; tooltips; timeframe labels + as-of date
-- [ ] Tabs regression test (each tab renders its own content)
+### Slice 4 — Outputs (each reviewed in-slice) ✅
+- [x] Three-lever waterfall chart (go.Waterfall; inspected @1280/@375 — no clipped labels, $ ticks non-dup, exact reconciliation)
+- [x] Penetration trend + buyer-flow (new/retained/lapsed) chart
+- [x] "Which lever" verdict (computed) + metric cards + detail table; glossary; "why this matters"; filter tooltips; timeframe labels + as-of date
+- [x] Tabs regression test + chart-target tests (each view renders its callback targets)
+- ↪ Deferred to Slice 5 copy pass (Shawn): prescriptive "recommended next move" wording on the verdict (kept honest/computed, not scripted)
 
 ### Slice 5 — Ship
 - [ ] `/ce:compound` + multi-agent code review; drive findings to resolution
@@ -110,7 +111,7 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - [x] Waterfall reconciliation unit test passes exactly.
 - [x] Panel package is versioned, seed-locked, reproducible, and importable by #4.
 - [ ] App deployed; liveness-only `/health` (200 while process up; no DB, no 503 gate).
-- [ ] Every chart individually inspected; tabs regression test green.
+- [x] Every chart individually inspected; tabs regression test green.
 - [ ] Compound review complete, findings resolved, tests green.
 - [ ] Blog post draft + Work-page card delivered.
 

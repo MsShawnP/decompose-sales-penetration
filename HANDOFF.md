@@ -7,6 +7,46 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-06 — Slice 4 complete: all outputs live (charts, cards, table)
+
+**Did (5 commits, 4A–4E):** Built the real outputs, each inspected in-slice.
+- `charts.py`: cloned economist_layout + CHART_CONFIG; added `dollar_yaxis` /
+  `_nice_dollar_dtick` for true, evenly-spaced, non-duplicate $ ticks.
+- **Waterfall** (which_lever): `go.Waterfall` bridging Period A→B across the three
+  levers, reconciled to ΔSales; increase=teal / decrease=berry / totals=navy, bold
+  signed-$ labels, exact-$ hover. Figure + verdict recompute together from filters.
+- **Penetration trend + buyer flow** (penetration): penetration % line (A/B marked)
+  + new/retained/lapsed relative bars (lapsed below zero).
+- **Metric cards + ag-grid table** (detail): four cards (Sales, penetration,
+  frequency, spend/trip; B big, A + signed Δ) + per-quarter grid (Quarter pinned,
+  cents where they matter).
+- **Glossary** (6 terms), **filter tooltips**, **why-this-matters** panels.
+
+**Real bug fixed:** ag-grid mounted in a `display:none` tab panel sized its columns
+to 0 width. Keyed the detail callback on `main-tabs` value so the grid rebuilds when
+the tab is shown → responsiveSizeToFit fits all 8 columns. (Also: charts render their
+data via callbacks at load regardless of tab visibility — so verifying chart *data*
+doesn't require the tab to be visible; only the ag-grid *sizing* did.)
+
+**Inspected** @1280 and @375 across all three tabs: no clipped labels, currency
+ticks true/non-duplicate ($0..$50,000; 0%..50%), legends at bottom, bold labels, no
+horizontal overflow, no console errors. Whole-brand default is the erosion story end
+to end — penetration −2.2pp, frequency −0.14 trips, spend/trip +$1.88 → +$1,954.
+
+**State:** **80 tests green** (31 app + 49 panel), ruff clean. Preview-harness notes:
+Plotly inits at 0 width until a viewport is set (resize to 1280 first); dcc.Tab divs
+don't respond to `preview_click` — drive them with a native `.click()` via eval.
+
+**Deferred to Shawn (Slice 5 copy pass):** a prescriptive "recommended next move" on
+the verdict. Kept the verdict computed/honest (names the dominant lever) rather than
+scripting advice — that's a copy decision for Shawn.
+
+**Next:** Slice 5 — ship. `/ce:compound` + multi-agent code review; drive findings to
+resolution; then deploy (needs Shawn's go-ahead + the store-universe vendoring blocker
+resolved — see FAILURES.md); Work-page card; launch blog post draft.
+
+---
+
 ## 2026-07-06 — Slice 3 complete: app shell (in-process, no DB)
 
 **Decision (Shawn):** Decompose uses **no database**. Data is the in-process,
