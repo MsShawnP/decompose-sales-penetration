@@ -29,7 +29,6 @@ from lailara_palette import (
     LL_INK,
     LL_REFERENCE,
     LL_SANS,
-    LL_SEQ,
     LL_SERIF,
     LL_SG,
     LL_SG_DARK,

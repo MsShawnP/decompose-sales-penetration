@@ -8,7 +8,7 @@ Product line, Retailer (channel is deliberately NOT a top-level control).
 
 import json
 
-from dash import Input, Output, callback, dcc, html, no_update
+from dash import Input, Output, callback, dcc, html
 
 from app import panel_data
 
