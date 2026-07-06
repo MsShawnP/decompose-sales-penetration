@@ -7,6 +7,53 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-06 — Slice 5: reviewed, fixed, DEPLOYED (custom-domain DNS pending)
+
+**Deployed.** Live at **https://decompose-sales-penetration.fly.dev** (2 machines,
+iad, health checks passing). `/health` → `200 {"status":"ok"}`; production
+`_dash-layout` contains all chart targets + as-of note + synthetic disclosure — the
+panel generates in-container and the app is fully wired.
+
+**⚠ One manual step left (Shawn — no registrar access from here):** point
+`decompose.lailarallc.com` DNS at Fly, then it goes live on the branded domain. Cert
+already created (`fly certs add`), currently "Not verified" pending DNS. Records:
+- `A    decompose → 66.241.125.108`
+- `AAAA decompose → 2a09:8280:1::140:558f:0`
+  (or a `CNAME decompose → decompose-sales-penetration.fly.dev`). Then
+  `fly certs check decompose.lailarallc.com`.
+
+**5A — multi-agent code review (5 personas):** correctness, Python, maintainability,
+testing, project-standards. Drove all real findings to resolution:
+- **Correctness bug fixed:** period_a == period_b made the verdict falsely claim
+  "Sales rose $0 … driven by more households buying." Now a neutral "unchanged"
+  verdict + neutral headline.
+- Data-driven card deltas (no more label-string branch); consolidated 3 duplicated
+  `_filters` into `panel_data.parse_filter_state`; removed 34 dead palette tokens +
+  `fmt_delta`; dropped redundant xaxis overrides; added value labels to the
+  buyer-flow bars + penetration points (chart rule); hardened `_nice_dollar_dtick`
+  ($1 floor). **+24 tests** (charts, figure-builders, zero-delta, parse). Fixed the
+  stale README (no-DB reality).
+
+**5B — drafts** in `docs/launch/` (blog reveal post + work-page card) for Shawn's
+copy pass.
+
+**5C — deploy:** vendored `cinderhaven-store-universe` into `packages/` (best-practice
+for this context — matches the lailara-palette precedent; textbook alt is a private
+index but that's overkill for a locked, versioned canonical package). Panel's 49
+canonical tests still pass (no drift). Confirmed with Shawn: name/subdomain/panel
+unchanged; deploy go-ahead given.
+
+**State:** **104 tests green** (55 app + 49 panel), ruff clean. Image 151 MB.
+
+**Remaining (not blocking a working deploy):**
+- DNS for the custom domain (above).
+- Optional: `/ce:compound` to compound the learnings (no-DB decision, ag-grid
+  hidden-init fix, the review). `/publish` to flip the repo public when ready.
+- Shawn's copy pass on the blog/work-card; a prescriptive "next move" line on the
+  verdict if wanted (kept computed/honest for now).
+
+---
+
 ## 2026-07-06 — Slice 4 complete: all outputs live (charts, cards, table)
 
 **Did (5 commits, 4A–4E):** Built the real outputs, each inspected in-slice.

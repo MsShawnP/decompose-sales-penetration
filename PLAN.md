@@ -92,12 +92,12 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - ↪ Deferred to Slice 5 copy pass (Shawn): prescriptive "recommended next move" wording on the verdict (kept honest/computed, not scripted)
 
 ### Slice 5 — Ship
-- [ ] `/ce:compound` + multi-agent code review; drive findings to resolution
-- [ ] Tests green (match the Spin Rate bar)
-- [ ] Deploy to Fly.io + `decompose.lailarallc.com` (CONFIRM name/subdomain/panel/canonical with Shawn first)
-- [ ] Work-page card (Door Math / Spin Rate format)
-- [ ] Launch/reveal blog post draft ("here's the one your dashboard isn't showing you")
-- [ ] HANDOFF.md + FAILURES.md + memory saved; **panel generator left ready for #4**
+- [x] Multi-agent code review (5 personas); findings driven to resolution (`/ce:compound` still optional)
+- [x] Tests green (104: 55 app + 49 panel; ruff clean)
+- [x] Deployed to Fly.io (decompose-sales-penetration.fly.dev; confirmed specs w/ Shawn) — ⚠ `decompose.lailarallc.com` DNS record pending (Shawn's registrar)
+- [x] Work-page card draft (docs/launch/work-card.md)
+- [x] Launch/reveal blog post draft (docs/launch/blog-draft.md)
+- [x] HANDOFF.md + FAILURES.md + memory saved; **panel generator left ready for #4** (vendored + importable)
 
 ## Out of scope for this arc
 
@@ -110,7 +110,7 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 
 - [x] Waterfall reconciliation unit test passes exactly.
 - [x] Panel package is versioned, seed-locked, reproducible, and importable by #4.
-- [ ] App deployed; liveness-only `/health` (200 while process up; no DB, no 503 gate).
+- [x] App deployed; liveness-only `/health` (200 while process up; no DB, no 503 gate). — verified live on Fly.
 - [x] Every chart individually inspected; tabs regression test green.
 - [ ] Compound review complete, findings resolved, tests green.
 - [ ] Blog post draft + Work-page card delivered.

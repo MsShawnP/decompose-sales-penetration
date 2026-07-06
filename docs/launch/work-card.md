@@ -15,7 +15,7 @@ Splits a brand's period-over-period sales change into the only three levers that
 
 **Stack:** Python · Dash · Plotly · pandas · Gunicorn/Docker/Fly.io. Data is an in-process, seed-locked synthetic household panel — no database, shared with tool #4.
 
-**Live:** https://decompose.lailarallc.com  *(pending deploy)*
+**Live:** https://decompose.lailarallc.com  *(deployed to Fly; custom-domain DNS pending)*
 
 ---
 
