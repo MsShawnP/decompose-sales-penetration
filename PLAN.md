@@ -176,7 +176,7 @@ Steps:
       identities `buying_hh_prev = retained + lapsed` and `buying_hh_curr = retained +
       new`, and the product identity `sales ≈ buying_hh × frequency × spend_per_trip`
       holds per quarter to tolerance ≤ 1e-6.
-- [ ] A6: Verify the seeded stories EMERGE (realism/tuning gate)
+- [x] A6: Verify the seeded stories EMERGE (realism/tuning gate)
     - (a) Erosion: over the seeded stretch, computed sales rise while computed
       household penetration falls; at least one *other* window is NOT erosion.
     - (b) Trial/repeat (for #4): compute trial and repeat rates for the two launch
