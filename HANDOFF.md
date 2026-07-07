@@ -7,6 +7,27 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-07 00:55 — Session close (/wrap)
+
+**Started from:** Slices 1 & 2 done; next was Slice 3 (app shell). Repo private, not deployed.
+
+**Did:** Slices 3–6 end to end — app shell (in-process, no DB, liveness health), all
+outputs (waterfall/penetration/flow/cards/table), 5-persona review + fixes, deploy to
+Fly + **decompose.lailarallc.com** (found + stored the Cloudflare DNS token outside the
+repos), `/ce-compound` (3 learnings), brand-scale projection (panel v0.2.0, k≈166.49
+anchored to $32.8M annual scan), `/code-review` + `/improve` + repo made **public** with
+description/topics. Corrected the "$99M is 3-year not annual" spec error and fixed +
+redeployed the Void Finder footer.
+
+**State:** Decompose live + public + brand-scale; 55 app + 58 package tests green; secrets
+clean. Void Finder redeployed. All pushed except the wrap commit.
+
+**Next:** Blog + work-card copy pass (`docs/launch/`); decide the portfolio-wide "$25M
+wholesale vs $33M retail" brand descriptor; tool #4 (Leaky Bucket) can now import the
+v0.2.0 panel (shares factor k).
+
+---
+
 ## 2026-07-06 — Slice 6: brand-scale projection (panel v0.2.0), redeployed
 
 **Why:** the ~5k-household panel's raw dollars (~$0.19M/yr) didn't tie to the

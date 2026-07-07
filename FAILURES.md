@@ -10,6 +10,42 @@ they are not re-discovered here.
 
 ## Entries
 
+### 2026-07-07 — The wrangler OAuth token can't edit Cloudflare DNS (wasted a long hunt)
+
+**Attempted:** To create the `decompose.lailarallc.com` DNS record, searched env vars,
+every `.env`/cred file across all repos, shell profiles, `~/.claude`, Windows Credential
+Manager, and MCP connectors for a Cloudflare DNS token. Then tried the wrangler OAuth
+token (`~/.wrangler/config/default.toml`) against the Cloudflare API.
+
+**Why it didn't work:** The wrangler OAuth token is scoped `zone:read` + Workers/Pages
+only — the `dns_records` endpoint returns `Authentication error (code 10000)`. The
+DNS-edit credential is a **separate "Lailara LLC custom token"** that lives ONLY at
+`~/.config/lailara/cloudflare-dns-token` (outside all repos); Cloudflare never reveals a
+token's value after creation, so it can't be recovered — only Shawn had it.
+
+**What we tried instead:** Shawn provided the token; stored it at the home path above
+(see the `cloudflare-dns-token` memory). Fly custom-domain DNS is then a DNS-only CNAME +
+`_acme-challenge` CNAME (doormath pattern). Also mis-assumed the apex site was Squarespace
+(a `_domainconnect` record) — it's Cloudflare; verified the live site clean directly.
+
+**Status:** Resolved. **Lesson for next time:** for any `*.lailarallc.com` DNS work, read
+the token at `~/.config/lailara/cloudflare-dns-token` — do NOT rely on the wrangler OAuth.
+**Tags:** cloudflare, dns, credentials, wrangler, deploy
+
+### 2026-07-07 — Preview screenshots time out on infinite CSS animations
+
+**Attempted:** `preview_screenshot` to visually verify the app.
+
+**Why it didn't work:** The selected-tab CSS (inherited from the Spin Rate clone) has a
+running animation; the screenshot tool waits for animation/idle and times out (30s).
+
+**What we tried instead:** DOM/`preview_eval` + `preview_inspect` + accessibility
+snapshots to verify content, ticks, overflow, and computed styles — more reliable than
+screenshots anyway. Also: `dcc.Tab` divs don't respond to `preview_click`; drive them with
+a native `document.querySelectorAll('.custom-tab')[i].click()` via eval.
+
+**Status:** Worked around. **Tags:** preview-harness, screenshots, dash, verification
+
 ### 2026-07-06 — Deploy will fail until `cinderhaven-store-universe` is vendored (Slice 5 blocker)
 
 **Found during:** Slice 3 (writing the Dockerfile).

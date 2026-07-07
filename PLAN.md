@@ -106,14 +106,16 @@ deploy. Each visualization is reviewed in its own slice, not deferred to polish.
 - Any change to doormath's or the series' locked canonical figures.
 - Real (non-synthetic) panel data.
 
-## Definition of done for this arc
+## Definition of done for this arc — ✅ SHIPPED 2026-07-06 (+ post-ship Slice 6 brand-scale projection)
 
 - [x] Waterfall reconciliation unit test passes exactly.
-- [x] Panel package is versioned, seed-locked, reproducible, and importable by #4.
-- [x] App deployed; liveness-only `/health` (200 while process up; no DB, no 503 gate). — verified live on Fly.
+- [x] Panel package is versioned (v0.2.0), seed-locked, reproducible, and importable by #4.
+- [x] App deployed; liveness-only `/health` (200 while process up; no DB, no 503 gate). — verified live on Fly + decompose.lailarallc.com.
 - [x] Every chart individually inspected; tabs regression test green.
-- [ ] Compound review complete, findings resolved, tests green.
-- [ ] Blog post draft + Work-page card delivered.
+- [x] Compound review complete (5-persona + /code-review), findings resolved, tests green (55 app + 58 package).
+- [x] Blog post + Work-page card **drafts** delivered (`docs/launch/`) — awaiting Shawn's copy pass.
+- [x] Repo public (description + topics); `/ce-compound` learnings banked (docs/solutions/).
+- ↪ Post-ship (Slice 6): brand-scale projection (k≈166.49 → $32.8M annual scan); canonical-copy fix ($99M is 3yr, not annual); Void Finder footer fixed + redeployed.
 
 ---
 
