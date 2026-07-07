@@ -52,6 +52,9 @@ history runway.
 - FAILURES.md — things tried that didn't work + inherited dead-ends
 - docs/SPEC.md — full tool specification
 - docs/brainstorms/ — the original brief and brainstorm
+- docs/solutions/ — documented solutions to past problems (bugs, best practices,
+  workflow patterns), organized by category with YAML frontmatter (`module`, `tags`,
+  `problem_type`). Relevant when implementing or debugging in a documented area.
 
 Global solo-dev workflow rules (`~/.claude/CLAUDE.md`) and the session-start
 protocol apply. This file only records what is specific or non-obvious to
