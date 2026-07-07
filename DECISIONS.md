@@ -93,8 +93,9 @@ is reversed, strike it through and add the replacement below — don't delete.
 - **Decision:** Where a surface implies $99M is annual, reword to "~$33M/yr at retail
   ($99M scanned over three years)". Fixed the Void Finder footer (voidfinder commit
   `55eea94`). Broad repo sweep otherwise clean.
-- **Open (for Shawn):** (1) the apex lailarallc.com site is Squarespace-hosted — its
-  copy is outside the repos; check it manually for the same ambiguity. (2) Whether to
+- **Open (for Shawn):** (1) the apex lailarallc.com site (Cloudflare-hosted) was
+  checked live across home/work/about/services/case-studies/tools/portfolio — **no
+  "$99M" copy anywhere, clean.** (2) Whether to
   restyle the canonical brand descriptor from "$25M" (wholesale) to the retail framing
   portfolio-wide is a copy-pass call — left as-is here since CINDERHAVEN_CANONICAL
   currently says "use this phrasing" for $25M. (3) Void Finder needs a redeploy to

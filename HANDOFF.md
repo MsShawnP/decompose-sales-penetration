@@ -33,8 +33,8 @@ panel-measured.
 
 **Open (for Shawn):**
 - **Void Finder needs a redeploy** to publish its footer fix (only the repo is fixed).
-- The apex **lailarallc.com site is Squarespace-hosted** — check its copy for the same
-  "$99M-as-annual" ambiguity manually (outside the repos).
+- The apex **lailarallc.com site (Cloudflare-hosted)** was checked live across
+  home/work/about/services/case-studies/tools/portfolio — **no "$99M" copy, clean.**
 - Whether to restyle the canonical brand descriptor from "$25M" (wholesale) to the
   retail framing portfolio-wide is a copy-pass call (left as-is; canonical currently
   says "use $25M phrasing").
