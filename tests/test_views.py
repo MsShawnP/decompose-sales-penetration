@@ -85,9 +85,16 @@ class TestZeroDeltaVerdict:
 
 
 class TestMetricCardDeltas:
-    def test_penetration_card_uses_pp_and_dollar_cards_use_dollars(self):
+    def test_cards_show_the_computed_delta_in_each_metric_own_unit(self):
+        # Assert the actual computed delta strings appear — that the right delta
+        # formatter is applied to the right field's (b - a) difference — not merely
+        # that "pp"/"$" show up somewhere (which a swapped formatter would still pass).
+        from app.views.detail import _dollar_delta, _pp_delta
+
         metrics = hp.get_period_metrics(None, None)
-        cards = _build_metric_cards(metrics, "2024-Q4", "2025-Q4")
-        text = _text(cards)
-        assert "pp" in text          # penetration delta in percentage points
-        assert "$" in text           # sales / spend deltas in dollars
+        indexed = metrics.set_index("quarter_label")
+        a, b = indexed.loc["2024-Q4"], indexed.loc["2025-Q4"]
+        text = _text(_build_metric_cards(metrics, "2024-Q4", "2025-Q4"))
+
+        assert _pp_delta(b["penetration"] - a["penetration"]) in text   # e.g. "−2.2 pp"
+        assert _dollar_delta(b["sales"] - a["sales"]) in text           # e.g. "+$2K"
