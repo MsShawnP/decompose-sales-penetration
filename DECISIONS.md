@@ -69,6 +69,37 @@ is reversed, strike it through and add the replacement below — don't delete.
   `postgres://postgres:<OPERATOR_PASSWORD>@cinderhaven-db.flycast:5432/<db>?sslmode=disable`.
 - **Scope:** deploy/secrets. **Do not:** commit or print the credential value.
 
+## Canonical figures & brand scale
+
+### 2026-07-06 — Project panel absolute totals to brand scale (factor k)
+- **Why:** The panel is a ~5,000-household sample, so its raw dollars (~$0.19M/yr)
+  don't tie to the rest of the Cinderhaven portfolio. Absolute totals should read at
+  brand scale.
+- **Decision (Shawn signed off):** Scale ABSOLUTE totals (sales $, buyer/household
+  counts, trip counts) by one fixed factor **k ≈ 166.49**, defined in the shared
+  `cinderhaven-household-panel` package (`get_projection_factor`) so tool #4 uses the
+  identical factor. **Rates** (penetration %, frequency, spend per trip) are
+  panel-measured and NOT scaled (k cancels in a ratio). k is anchored so the panel's
+  reference year (2025) projects to the **canonical ANNUAL scan revenue = $32.8M**;
+  it DERIVES from the locked canonical figure and does not alter it. Waterfall still
+  reconciles; verdict direction/attribution unchanged. `PANEL_VERSION` 0.1.0 → 0.2.0.
+- **Scope:** panel package + app UI (figures labeled "projected to brand scale").
+
+### 2026-07-06 — Canonical-copy fix: ~$99M is 3-year scanned, NOT annual
+- **Why:** Several surfaces read Cinderhaven's ~$99M as an annual brand size. It is
+  the **3-year cumulative scan total** (2023-01 → 2026-01; Void Finder headline
+  $99.06M). **Annual** scan revenue is ~$32.8M; annual **wholesale** brand revenue is
+  ~$25M (the canonical "a $25M specialty food brand" descriptor).
+- **Decision:** Where a surface implies $99M is annual, reword to "~$33M/yr at retail
+  ($99M scanned over three years)". Fixed the Void Finder footer (voidfinder commit
+  `55eea94`). Broad repo sweep otherwise clean.
+- **Open (for Shawn):** (1) the apex lailarallc.com site is Squarespace-hosted — its
+  copy is outside the repos; check it manually for the same ambiguity. (2) Whether to
+  restyle the canonical brand descriptor from "$25M" (wholesale) to the retail framing
+  portfolio-wide is a copy-pass call — left as-is here since CINDERHAVEN_CANONICAL
+  currently says "use this phrasing" for $25M. (3) Void Finder needs a redeploy to
+  publish the footer fix.
+
 ## Product & Scope (from /clarify, 2026-07-06)
 
 ### 2026-07-06 — Narrative is computed from the SSOT, never scripted
