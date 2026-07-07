@@ -54,15 +54,27 @@ def _build_content_area():
     )
 
 
+_PROJECTION_TIP = (
+    "Household penetration, purchase frequency, and spend per trip are measured on "
+    "the household panel. Dollar totals and buyer counts are projected to "
+    "Cinderhaven's brand scale (~$33M/yr at retail; ~$99M scanned over three years)."
+)
+
+
 def _build_as_of_note():
-    """As-of date + synthetic-data disclosure (both required on an exec-facing page)."""
+    """As-of date + brand-scale label + synthetic-data disclosure (exec-facing page)."""
     as_of = panel_data.AS_OF_DATE.strftime("%b %d, %Y")
     return html.Div(
         [
             html.Span(f"Panel as of {as_of}", className="as-of-chip"),
             html.Span(
-                "Synthetic Cinderhaven data — a demonstration of the method, not a "
-                "real brand.",
+                "Projected to brand scale",
+                className="as-of-chip projected-chip",
+                title=_PROJECTION_TIP,
+            ),
+            html.Span(
+                "Synthetic Cinderhaven data — a demonstration of the method from a "
+                "representative household panel, not a real brand.",
                 className="synthetic-note",
             ),
         ],

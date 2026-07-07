@@ -699,3 +699,11 @@ html, body {
     margin: 2px 0 0;
     max-width: 66ch;
 }
+
+/* Projected-to-brand-scale chip (Slice 6) */
+.as-of-chip.projected-chip {
+    color: var(--ll-hk-25);
+    background: var(--ll-hk-95);
+    cursor: help;
+    border-bottom: 1px dotted var(--ll-hk-25);
+}

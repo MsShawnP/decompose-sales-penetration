@@ -42,11 +42,10 @@ class TestNiceDollarDtick:
 
 
 class TestDollarYaxis:
-    def test_extends_range_past_max_and_prefixes_dollar(self):
+    def test_extends_range_past_max_and_formats_dollars(self):
         axis = dollar_yaxis(100_000)
         assert axis["range"][1] > 100_000  # top data label isn't clipped
-        assert axis["tickprefix"] == "$"
-        assert axis["tickformat"] == ",.0f"
+        assert axis["tickformat"] == "$~s"  # SI-abbreviated dollars ("$2M", "$325k")
 
     def test_nonpositive_max_yields_valid_range(self):
         axis = dollar_yaxis(0)

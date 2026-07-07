@@ -22,6 +22,11 @@ GLOSSARY = [
      "Sales = buying households × purchase frequency × spend per trip. The waterfall "
      "splits the change between two periods across exactly those three levers "
      "(an exact Shapley attribution), so the pieces sum to the total change."),
+    ("Projected to brand scale",
+     "The panel is a ~5,000-household sample. Dollar totals and buyer counts are "
+     "scaled by one fixed factor to Cinderhaven's brand scale (~$33M/yr at retail; "
+     "~$99M scanned over three years). Penetration, frequency, and spend per trip are "
+     "panel-measured rates and are not scaled."),
 ]
 
 

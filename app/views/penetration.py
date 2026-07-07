@@ -124,24 +124,26 @@ def _build_buyer_flow(flow):
     # uniformtext hides any that can't fit rather than letting them overflow.
     label_font = dict(family=FONT_SANS, size=11, color="#ffffff")
     fig = go.Figure()
+    # Counts are projected to brand scale (floats), so labels use SI (".3s" -> "248k")
+    # inside the bars and integer formatting on hover.
     fig.add_bar(
         x=x, y=retained, name="Retained", marker_color=HK_35,
-        text=retained, texttemplate="%{text:,}", textposition="inside",
+        text=retained, texttemplate="%{text:.3s}", textposition="inside",
         insidetextfont=label_font,
-        hovertemplate="%{x}<br>Retained %{y:,}<extra></extra>",
+        hovertemplate="%{x}<br>Retained %{y:,.0f}<extra></extra>",
     )
     fig.add_bar(
         x=x, y=new, name="New", marker_color=CHICAGO_20,
-        text=new, texttemplate="%{text:,}", textposition="inside",
+        text=new, texttemplate="%{text:.3s}", textposition="inside",
         insidetextfont=label_font,
-        hovertemplate="%{x}<br>New %{y:,}<extra></extra>",
+        hovertemplate="%{x}<br>New %{y:,.0f}<extra></extra>",
     )
     fig.add_bar(
         x=x, y=lapsed, name="Lapsed", marker_color=TOKYO_40,
         customdata=flow["lapsed"].tolist(),
-        text=flow["lapsed"].tolist(), texttemplate="%{text:,}", textposition="inside",
+        text=flow["lapsed"].tolist(), texttemplate="%{text:.3s}", textposition="inside",
         insidetextfont=label_font,
-        hovertemplate="%{x}<br>Lapsed %{customdata:,}<extra></extra>",
+        hovertemplate="%{x}<br>Lapsed %{customdata:,.0f}<extra></extra>",
     )
 
     # xaxis inherits economist_layout's default.

@@ -97,8 +97,9 @@ def dollar_yaxis(max_value: float, title: str = "Sales ($)", **overrides) -> dic
         gridwidth=1,
         showline=False,
         automargin=True,
-        tickprefix="$",
-        tickformat=",.0f",
+        # SI-abbreviated dollars ("$2M", "$325k") — reads cleanly at brand scale and
+        # matches the bar value labels; the round dtick keeps SI labels non-duplicate.
+        tickformat="$~s",
         dtick=dtick,
         range=[0, max_value * 1.15 if max_value > 0 else 1],
         tickfont=dict(family=FONT_SANS, size=12, color=TEXT_SECONDARY),
