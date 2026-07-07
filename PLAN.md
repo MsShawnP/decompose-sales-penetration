@@ -209,3 +209,22 @@ Steps:
 ## Improvement history
 
 <!-- Entries are added by /improve — don't delete this section -->
+
+### 2026-07-06 — Improvement pass
+- **Trigger:** user-initiated (to clear the /publish gate; project is brand-new,
+  Claude-authored, so no accumulated user concerns).
+- **What was reviewed:** workflow files, code quality, tests, deps, docs, git hygiene.
+  The deep code review (5-persona panel + /code-review) and security surface were
+  already covered earlier this same session, so not re-run.
+- **Findings:** 0 critical, 2 important (doc drift), 1 nice-to-have. Project is in
+  strong shape — 55 app + 58 package tests green, clean/pushed tree, no secrets,
+  deployed and healthy.
+- **What was fixed:** (1) CLAUDE.md said "Dash 3.x" → corrected to 4.x. (2) panel
+  package README was stale (v0.1.0 / "44 tests" / no projection) → updated to v0.2.0,
+  58 tests, added a "Brand-scale projection" section + new API exports. (3) paired the
+  "~$25M brand" (wholesale) refs in CLAUDE.md / SPEC.md / panel README with the
+  retail-scan scale the tool now projects to (~$33M/yr; ~$99M over 3yr).
+- **Deferred:** restyling the canonical brand descriptor from $25M to the retail
+  framing *portfolio-wide* is Shawn's copy-pass call (canonical says "use $25M"); the
+  blog/work-card drafts still await Shawn's copy pass; Void Finder needs a redeploy.
+- **Next review:** 2026-07-27 (active project; just shipped Slice 6).

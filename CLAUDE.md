@@ -30,7 +30,7 @@ history runway.
 ## Stack and tools
 
 - Primary language: Python 3.11
-- App: Dash 3.x + Plotly 6.0 (mirror the Spin Rate stack, do not reinvent)
+- App: Dash 4.x + Plotly 6.x (mirror the Spin Rate stack, do not reinvent)
 - Data: pandas 2.x, numpy. **In-process only** — the app imports the seed-locked
   `cinderhaven-household-panel` package, generates the panel once, and caches it to
   disk. **No psycopg2, no Postgres, no `DATABASE_URL` at request time.** (The panel
@@ -129,8 +129,11 @@ Decompose.
 
 - Reuse shared packages, don't duplicate (the `cinderhaven-store-universe`
   pattern). Lock the panel seeds and version them like `CINDERHAVEN_CANONICAL`.
-- The panel aligns to the canonical universe: ~$25M brand, 50 SKUs, 5 product
-  lines (AS·PS·SC·DG·SB), 6 retailers. `SEED` locked; reproducibility unit-tested.
+- The panel aligns to the canonical universe: ~$25M brand at wholesale (~$33M/yr
+  at retail scan; ~$99M scanned over three years — NOT an annual figure), 50 SKUs,
+  5 product lines (AS·PS·SC·DG·SB), 6 retailers. `SEED` locked; reproducibility
+  unit-tested. Absolute totals are projected to retail-scan brand scale by the panel
+  package's locked factor k (v0.2.0); rates stay panel-measured. See DECISIONS.md.
 - If anything would shift doormath's or the series' locked canonical figures:
   change protocol + canonical-figures impact check + Shawn's explicit approval.
   Do NOT change locked figures silently.

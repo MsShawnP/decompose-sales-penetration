@@ -5,8 +5,8 @@ Cinderhaven sales-penetration tools. Built by tool #3 (Decompose); imported
 unchanged by tool #4 (Leaky Bucket). This is the largest new data asset of the
 series — panel data, not POS scan data.
 
-> **Status: built (v0.1.0), Slice 1 complete.** Deterministic given `SEED=42`;
-> 44 canonical / realism / seeded-story / integration tests green. Packaged like
+> **Status: built (v0.2.0).** Deterministic given `SEED=42`; 58 canonical / realism /
+> seeded-story / projection / integration tests green. Packaged like
 > `cinderhaven-store-universe` (doormath) — `pip install -e .` (requires that peer
 > package installed for the canonical universe).
 
@@ -19,8 +19,20 @@ a canonical test — exactly how `cinderhaven-store-universe` is shipped.
 ## Grain
 
 `household_id × transaction × item × date × spend` — with derived per-period
-aggregates. Households buy the canonical universe: ~$25M brand, 50 SKUs, 5 product
-lines (AS·PS·SC·DG·SB), 6 retailers.
+aggregates. Households buy the canonical universe: ~$25M brand at wholesale
+(~$33M/yr at retail scan), 50 SKUs, 5 product lines (AS·PS·SC·DG·SB), 6 retailers.
+
+## Brand-scale projection (v0.2.0)
+
+`get_period_metrics` and `get_buyer_flow` scale **absolute totals** — sales $,
+buyer/household counts, trip counts — by one fixed factor `k` (`get_projection_factor`,
+≈ 166.49) so they read at Cinderhaven's retail-scan brand scale. **Rates** (household
+penetration %, purchase frequency, spend per trip) are panel-measured and NOT scaled —
+`k` cancels in a ratio. `k` is locked (one factor for every period, so real movement is
+preserved) and anchored so the reference year (2025) projects to the canonical annual
+scan revenue (`$32.8M`); it derives from the locked canonical figure, does not alter it,
+and is the identical factor tool #4 uses. NB: the oft-quoted **~$99M is the 3-year
+cumulative scan total, not annual**.
 
 ## Timeline (locked)
 
@@ -45,7 +57,7 @@ trap named in the anchor blog post. Enforced by a unit test.
 
 ```python
 from cinderhaven_household_panel import (
-    SEED, PANEL_VERSION,           # locked int (42), version string ("0.1.0")
+    SEED, PANEL_VERSION,           # locked int (42), version string ("0.2.0")
     N_HOUSEHOLDS,                  # 5000
     BURN_IN_QUARTERS, ANALYSIS_QUARTERS, TOTAL_QUARTERS,   # 4, 8, 12
     ALL_SKUS, PRODUCT_LINES, RETAILERS, REGIONS,           # canonical universe (reused)
@@ -55,16 +67,19 @@ from cinderhaven_household_panel import (
     get_sku_prices, get_price_path,# per-SKU base price; quarterly price index (2025 ramp)
     get_launch_items,              # launch metadata (sku, launch quarter, trial/repeat params)
     get_transactions,             # THE PANEL: household x quarter x date x sku x retailer x units x spend
-    get_period_metrics,            # per-quarter penetration, frequency, spend/trip (+ units/price split); product_line/retailer filters
-    get_buyer_flow,                # new / retained / lapsed per adjacent quarter pair
+    get_period_metrics,            # per-quarter penetration, frequency, spend/trip (+ units/price split), absolute totals projected; product_line/retailer filters
+    get_buyer_flow,                # new / retained / lapsed per adjacent quarter pair (projected counts)
+    get_projection_factor,         # the locked brand-scale factor k (shared with #4)
+    CANONICAL_ANNUAL_SCAN_REVENUE, PROJECTION_REFERENCE_YEAR,  # $32.8M anchor, 2025
 )
 ```
 
 `get_period_metrics(product_line=None, retailer_id=None)` and `get_buyer_flow(...)`
 take optional filters. Penetration denominator is always the full panel
-(`N_HOUSEHOLDS`). The identity `buying_households × frequency × spend_per_trip ==
-sales` holds exactly per quarter. All generators are deterministic given `SEED` and
-return identical frames across calls.
+(`N_HOUSEHOLDS`, and penetration stays the raw panel share — it is not projected).
+The identity `buying_households × frequency × spend_per_trip == sales` holds per
+quarter (projected `buying_households` and `sales` both carry `k`, so it reconciles).
+All generators are deterministic given `SEED` and return identical frames across calls.
 
 **Note on erosion grain:** the seeded "growth that's actually erosion" story is a
 *quarterly* signal (annual reach saturates). Compare quarters year-over-year
