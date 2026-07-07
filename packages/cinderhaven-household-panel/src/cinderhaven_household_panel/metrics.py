@@ -14,6 +14,11 @@ sales holds exactly regardless of filter.
 import pandas as pd
 
 from .constants import N_HOUSEHOLDS
+from .projection import (
+    PROJECTED_FLOW_COLUMNS,
+    PROJECTED_METRIC_COLUMNS,
+    get_projection_factor,
+)
 from .transactions import get_transactions
 
 
@@ -52,11 +57,20 @@ def get_period_metrics(product_line=None, retailer_id=None) -> pd.DataFrame:
     for col in ("buying_households", "trips", "units", "sales"):
         m[col] = m[col].fillna(0)
 
+    # Rates first, from the RAW (panel-measured) counts. penetration is the panel
+    # share; frequency/spend/etc. are per-trip/per-unit ratios. These are NOT scaled.
     m["penetration"] = m["buying_households"] / N_HOUSEHOLDS
     m["frequency"] = _safe_div(m["trips"], m["buying_households"])
     m["spend_per_trip"] = _safe_div(m["sales"], m["trips"])
     m["units_per_trip"] = _safe_div(m["units"], m["trips"])
     m["price_per_unit"] = _safe_div(m["sales"], m["units"])
+
+    # Then project the ABSOLUTE totals to brand scale by the locked factor k. The
+    # product identity buying_households x frequency x spend_per_trip = sales still
+    # holds (buying_households and sales both scale by k; the rates are unchanged).
+    k = get_projection_factor()
+    for col in PROJECTED_METRIC_COLUMNS:
+        m[col] = m[col] * k
 
     return m.rename(columns={"label": "quarter_label"}).reset_index(drop=True)
 
@@ -97,7 +111,14 @@ def get_buyer_flow(product_line=None, retailer_id=None) -> pd.DataFrame:
                 "lapsed": len(prior - current),
             }
         )
-    return pd.DataFrame(rows)
+    flow = pd.DataFrame(rows)
+    # Project the absolute household counts to brand scale (same k as period metrics);
+    # the flow identities prior = retained + lapsed and current = retained + new are
+    # preserved because every column is scaled by the same k.
+    k = get_projection_factor()
+    for col in PROJECTED_FLOW_COLUMNS:
+        flow[col] = flow[col] * k
+    return flow
 
 
 def _safe_div(numer, denom):

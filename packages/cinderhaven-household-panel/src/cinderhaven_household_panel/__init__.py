@@ -22,11 +22,13 @@ from .constants import (
     ALL_SKUS,
     ANALYSIS_QUARTERS,
     BURN_IN_QUARTERS,
+    CANONICAL_ANNUAL_SCAN_REVENUE,
     DEMO_AS_OF_DATE,
     N_HOUSEHOLDS,
     PANEL_START_YEAR,
     PANEL_VERSION,
     PRODUCT_LINES,
+    PROJECTION_REFERENCE_YEAR,
     REGIONS,
     RETAILERS,
     SEED,
@@ -39,6 +41,7 @@ from .pricing import (
     get_price_path,
     get_sku_prices,
 )
+from .projection import get_projection_factor
 from .transactions import get_transactions
 from .metrics import get_buyer_flow, get_period_metrics
 
@@ -57,6 +60,10 @@ __all__ = [
     "ANALYSIS_QUARTERS",
     "TOTAL_QUARTERS",
     "PANEL_START_YEAR",
+    # brand-scale projection (shared with tool #4)
+    "CANONICAL_ANNUAL_SCAN_REVENUE",
+    "PROJECTION_REFERENCE_YEAR",
+    "get_projection_factor",
     # calendar
     "QUARTERS",
     "ANALYSIS_QUARTER_LABELS",

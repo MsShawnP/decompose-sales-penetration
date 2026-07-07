@@ -28,11 +28,27 @@ SEED = 42
 
 # --- Panel data version ------------------------------------------------------
 # Bump when the generated panel changes in a way that would shift downstream
-# figures. Finalized in Slice 1 / step B.
-PANEL_VERSION = "0.1.0"
+# figures. 0.2.0: absolute totals from get_period_metrics / get_buyer_flow are now
+# projected to brand scale (see projection.py); rates are unchanged.
+PANEL_VERSION = "0.2.0"
 
 # --- Panel size (locked, confirmed with Shawn 2026-07-06) --------------------
 N_HOUSEHOLDS = 5_000
+
+# --- Brand-scale projection (derived from the locked canonical figure) --------
+# The panel is a ~5,000-household sample. ABSOLUTE totals (sales $, buyer/household
+# counts, trip counts) are scaled by a single fixed sample-to-universe factor k so
+# they read at Cinderhaven's brand scale; RATES (penetration %, purchase frequency,
+# spend per trip) are panel-measured and NOT scaled — k cancels in a ratio.
+# See projection.get_projection_factor for how k is derived and locked.
+#
+# Anchor: the panel's reference-year sales project to the canonical ANNUAL scan
+# revenue. This DERIVES from the locked canonical figure — it does not alter it.
+#   Canonical annual scan revenue = $32.8M (CINDERHAVEN_CANONICAL.md, trailing-52w).
+# NOTE: the ~$99M often quoted for Cinderhaven is the 3-YEAR cumulative scan total
+# (2023-01 -> 2026-01), NOT an annual figure — do not anchor annual sales to it.
+CANONICAL_ANNUAL_SCAN_REVENUE = 32_800_000
+PROJECTION_REFERENCE_YEAR = 2025  # latest full analysis year ~ trailing-52w
 
 # --- Timeline: 4 burn-in quarters + 8 analysis quarters = 12 quarters --------
 BURN_IN_QUARTERS = 4
@@ -57,4 +73,6 @@ __all__ = [
     "ANALYSIS_QUARTERS",
     "TOTAL_QUARTERS",
     "PANEL_START_YEAR",
+    "CANONICAL_ANNUAL_SCAN_REVENUE",
+    "PROJECTION_REFERENCE_YEAR",
 ]

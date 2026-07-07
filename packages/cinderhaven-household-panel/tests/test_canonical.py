@@ -236,9 +236,12 @@ class TestBuyerFlow:
         assert len(f) == 11
 
     def test_flow_identities_hold(self):
+        # Counts are projected to brand scale (floats), so compare to tolerance
+        # rather than exact equality; the identities hold because every column is
+        # scaled by the same k.
         f = hp.get_buyer_flow()
-        assert (f["prior_buyers"] == f["retained"] + f["lapsed"]).all()
-        assert (f["current_buyers"] == f["retained"] + f["new"]).all()
+        assert ((f["prior_buyers"] - (f["retained"] + f["lapsed"])).abs() <= 1e-6).all()
+        assert ((f["current_buyers"] - (f["retained"] + f["new"])).abs() <= 1e-6).all()
 
     def test_counts_nonnegative(self):
         f = hp.get_buyer_flow()

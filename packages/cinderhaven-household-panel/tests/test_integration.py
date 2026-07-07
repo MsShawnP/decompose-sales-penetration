@@ -30,7 +30,7 @@ class TestReproducibility:
 
 class TestPublicSurface:
     def test_version_is_set(self):
-        assert hp.PANEL_VERSION == "0.1.0"
+        assert hp.PANEL_VERSION == "0.2.0"
 
     def test_seed_and_sizing_exposed(self):
         assert hp.SEED == 42
