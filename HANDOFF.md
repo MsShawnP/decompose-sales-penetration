@@ -7,6 +7,43 @@ things that didn't work, see FAILURES.md.
 
 ---
 
+## 2026-07-06 — Slice 6: brand-scale projection (panel v0.2.0), redeployed
+
+**Why:** the ~5k-household panel's raw dollars (~$0.19M/yr) didn't tie to the
+Cinderhaven portfolio. Now ABSOLUTE totals project to brand scale; RATES stay
+panel-measured.
+
+**Did:**
+- **6A (panel v0.2.0):** `get_period_metrics` / `get_buyer_flow` scale absolute
+  totals (sales $, buyer/household counts, trip counts) by one fixed factor
+  **k ≈ 166.49**, defined in the shared package (`get_projection_factor`, shared with
+  #4). k = canonical annual scan revenue **$32.8M** / raw 2025 panel sales. Rates
+  (penetration/frequency/spend-per-trip) untouched — k cancels. Product + flow
+  identities still hold; waterfall reconciles at brand scale; verdict unchanged. +9
+  projection tests (58 package tests green).
+- **6B (UI):** "Projected to brand scale" chip + tooltip; glossary entry; waterfall
+  y-axis SI-abbreviated (`$2M`), buyer-flow labels SI (`248k`). Verified live: headline
+  **$8.2M in 2025-Q4 / +$325K**, "driven mainly by higher spend per trip" (unchanged).
+- **6C (canonical-copy + redeploy):** corrected the spec error that **~$99M is
+  3-YEAR cumulative scan, not annual** (annual scan = $32.8M). Fixed the Void Finder
+  footer (voidfinder commit `55eea94`). Broad repo sweep otherwise clean. Redeployed
+  Decompose — **live at brand scale** (decompose.lailarallc.com/health 200).
+
+**Sign-off:** Shawn confirmed $32.8M/yr as the anchor.
+
+**Open (for Shawn):**
+- **Void Finder needs a redeploy** to publish its footer fix (only the repo is fixed).
+- The apex **lailarallc.com site is Squarespace-hosted** — check its copy for the same
+  "$99M-as-annual" ambiguity manually (outside the repos).
+- Whether to restyle the canonical brand descriptor from "$25M" (wholesale) to the
+  retail framing portfolio-wide is a copy-pass call (left as-is; canonical currently
+  says "use $25M phrasing").
+- **Publish gate** still needs `/improve` (code-review now recorded).
+
+**State:** 55 app + 58 package tests green. PANEL_VERSION 0.2.0.
+
+---
+
 ## 2026-07-06 — Slice 5: reviewed, fixed, DEPLOYED (custom-domain DNS pending)
 
 **Deployed and LIVE at https://decompose.lailarallc.com** (HTTPS, cert Issued) — also
