@@ -7,10 +7,13 @@ from dash import html
 # deliberately plain so a CFO reads it without a stats background.
 GLOSSARY = [
     ("Household penetration",
-     "The share of all panel households that bought the brand in a quarter. Meaning "
+     "The share of all panel households that bought the brand in a quarter — "
+     "raw panel buyers ÷ 5,000 panelists, not a national projection. Meaning "
      "#3 — the one a distribution or velocity dashboard doesn't show you."),
     ("Buying households",
-     "How many distinct households bought at all in the period — the first lever."),
+     "How many distinct households bought at all in the period — the first lever. "
+     "The displayed count is projected to brand scale (see 'Projected to brand "
+     "scale' below); the raw panel count is much smaller."),
     ("Purchase frequency",
      "Trips per buying household in the period — how often your buyers came back."),
     ("Spend per trip",
