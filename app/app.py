@@ -134,7 +134,7 @@ _LOADING_OVERLAY = """
 """
 
 app.index_string = """<!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         {%metas%}
         <title>{%title%}</title>
